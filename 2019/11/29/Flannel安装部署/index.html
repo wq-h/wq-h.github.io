@@ -1,0 +1,246 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Flannel安装部署 | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Kubernetes设计了网络模型，但且将它的实现交给了网络插件，CNI网络插件最主要的功能就是实现POD资源能够跨宿主机就行通信  Flannel Calico Canal Contiv OpenContrail NSX-T   Kube-router">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flannel安装部署">
+<meta property="og:url" content="https://wqblogs.com/2019/11/29/Flannel%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="Kubernetes设计了网络模型，但且将它的实现交给了网络插件，CNI网络插件最主要的功能就是实现POD资源能够跨宿主机就行通信  Flannel Calico Canal Contiv OpenContrail NSX-T   Kube-router">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com/image/default.png">
+<meta property="article:published_time" content="2019-11-29T03:49:54.000Z">
+<meta property="article:modified_time" content="2022-11-21T04:10:48.634Z">
+<meta property="article:author" content="chongzi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2019/11/29/Flannel%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//hm.baidu.com"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" media="print" onload="this.media='all'"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?8e59cc967555d761c463de775bfbcbc5";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}"}},
+  translate: {"defaultEncoding":2,"translateDelay":0,"msgToTraditionalChinese":"繁","msgToSimplifiedChinese":"簡"},
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery@2/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Flannel安装部署',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-11-21 12:10:48'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">185</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">39</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com/image/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">虫子个人博客</a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Flannel安装部署</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2019-11-29T03:49:54.000Z" title="發表於 2019-11-29 11:49:54">2019-11-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2022-11-21T04:10:48.634Z" title="更新於 2022-11-21 12:10:48">2022-11-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Kubernetes/">Kubernetes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-wordcount"><i class="far fa-file-word fa-fw post-meta-icon"></i><span class="post-meta-label">字數總計:</span><span class="word-count">1.7k</span><span class="post-meta-separator">|</span><i class="far fa-clock fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀時長:</span><span>9分鐘</span></span><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Flannel安装部署"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>Kubernetes设计了网络模型，但且将它的实现交给了网络插件，CNI网络插件最主要的功能就是实现POD资源能够跨宿主机就行通信</p>
+<ul>
+<li>Flannel</li>
+<li>Calico</li>
+<li>Canal</li>
+<li>Contiv</li>
+<li>OpenContrail</li>
+<li>NSX-T</li>
+<li>  Kube-router</li>
+</ul>
+   <span id="more"></span>
+
+<h2 id="主机环境"><a href="#主机环境" class="headerlink" title="主机环境"></a>主机环境</h2><table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>角色</th>
+<th>ip</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>HDSS7-21.host.com</td>
+<td>flannel</td>
+<td>10.4.7.21</td>
+</tr>
+<tr>
+<td>HDSS7-22.host.com</td>
+<td>flannel</td>
+<td>10.4.7.22</td>
+</tr>
+</tbody></table>
+<p>注意：这里部署文档以HDSS7-21.host.com主机为例，另外一台运算节点安装部署方法类似</p>
+<h2 id="下载软件，解压"><a href="#下载软件，解压" class="headerlink" title="下载软件，解压"></a>下载软件，解压</h2><p><a target="_blank" rel="noopener" href="https://github.com/coreos/flannel">flannel</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 src]# wget https://github.com/coreos/flannel/releases/download/v0.11.0/flannel-v0.11.0-linux-amd64.tar.gz</span><br><span class="line">[root@hdss7-21 src]# mkdir /opt/flannel-v0.11.0</span><br><span class="line">[root@hdss7-21 src]# tar xf flannel-v0.11.0-linux-amd64.tar.gz -C /opt/flannel-v0.11.0</span><br><span class="line">[root@hdss7-21 src]# ln -s /opt/flannel-v0.11.0/ /opt/flannel</span><br><span class="line">[root@hdss7-21 src]# cd /opt/flannel</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="拷贝证书"><a href="#拷贝证书" class="headerlink" title="拷贝证书"></a>拷贝证书</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 flannel]# mkdir cert</span><br><span class="line">[root@hdss7-21 flannel]# cd cert/</span><br><span class="line">[root@hdss7-21 cert]# scp hdss7-200:/opt/certs/ca.pem .</span><br><span class="line">root@hdss7-200&#x27;s password:</span><br><span class="line">ca.pem                               100% 1354   109.5KB/s   00:00    </span><br><span class="line">[root@hdss7-21 cert]# scp hdss7-200:/opt/certs/client.pem .</span><br><span class="line">root@hdss7-200&#x27;s password:</span><br><span class="line">client.pem                           100% 1371    64.0KB/s   00:00    </span><br><span class="line">[root@hdss7-21 cert]# scp hdss7-200:/opt/certs/client-key.pem .</span><br><span class="line">root@hdss7-200&#x27;s password:</span><br><span class="line">client-key.pem                       100% 1675    59.7KB/s   00:00</span><br><span class="line">[root@hdss7-21 cert]# ll</span><br><span class="line">total 12</span><br><span class="line">-rw-r--r-- 1 root root 1354 Nov 29 10:09 ca.pem</span><br><span class="line">-rw------- 1 root root 1675 Nov 29 10:10 client-key.pem</span><br><span class="line">-rw-r--r-- 1 root root 1371 Nov 29 10:10 client.pem</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="创建配置文件"><a href="#创建配置文件" class="headerlink" title="创建配置文件"></a>创建配置文件</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 cert]# cd ../</span><br><span class="line">[root@hdss7-21 flannel]# vim subnet.env</span><br><span class="line">FLANNEL_NETWORK=172.7.0.0/16      # pod的ip地址范围</span><br><span class="line">FLANNEL_SUBNET=172.7.21.1/24        # 本机的ip地址范围</span><br><span class="line">FLANNEL_MTU=1500</span><br><span class="line">FLANNEL_IPMASQ=false</span><br></pre></td></tr></table></figure>
+
+
+<p>注意：flannel集群各主机的配置略有不同，部署其他节点时注意修改</p>
+<h2 id="创建flanneld启动脚本"><a href="#创建flanneld启动脚本" class="headerlink" title="创建flanneld启动脚本"></a>创建flanneld启动脚本</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 flannel]# vim flanneld.sh</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">!/bin/sh</span></span><br><span class="line">./flanneld \</span><br><span class="line">  --public-ip=10.4.7.21 \</span><br><span class="line">  --etcd-endpoints=https://10.4.7.12:2379,https://10.4.7.21:2379,https://10.4.7.22:2379 \</span><br><span class="line">  --etcd-keyfile=./cert/client-key.pem \</span><br><span class="line">  --etcd-certfile=./cert/client.pem \</span><br><span class="line">  --etcd-cafile=./cert/ca.pem \</span><br><span class="line">  --iface=eth0 \</span><br><span class="line">  --subnet-file=./subnet.env \</span><br><span class="line">  --healthz-port=2401</span><br><span class="line">[root@hdss7-21 flannel]# chmod +x flanneld.sh</span><br></pre></td></tr></table></figure>
+
+
+<p>注意：flannel集群各主机的配置略有不同，部署其他节点时注意修改</p>
+<h2 id="操作etcd，增加host-gw"><a href="#操作etcd，增加host-gw" class="headerlink" title="操作etcd，增加host-gw"></a>操作etcd，增加host-gw</h2><p>启动flannel之前，需要在etcd中添加网络配置记录</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 flannel]# cd /opt/etcd</span><br><span class="line">[root@hdss7-21 etcd]# ./etcdctl set /coreos.com/network/config &#x27;&#123;&quot;Network&quot;: &quot;172.7.0.0/16&quot;, &quot;Backend&quot;: &#123;&quot;Type&quot;: &quot;host-gw&quot;&#125;&#125;&#x27;</span><br><span class="line">&#123;&quot;Network&quot;: &quot;172.7.0.0/16&quot;, &quot;Backend&quot;: &#123;&quot;Type&quot;: &quot;host-gw&quot;&#125;&#125;</span><br><span class="line">[root@hdss7-21 etcd]# ./etcdctl get /coreos.com/network/config</span><br><span class="line">&#123;&quot;Network&quot;: &quot;172.7.0.0/16&quot;, &quot;Backend&quot;: &#123;&quot;Type&quot;: &quot;host-gw”&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>host-gw：直接路由的方式，将容器网络的路由信息直接更新到主机的路由表中，仅适用于二层直接可达的网络</p>
+<h2 id="创建supervisor配置"><a href="#创建supervisor配置" class="headerlink" title="创建supervisor配置"></a>创建supervisor配置</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 etcd]# mkdir /data/logs/flanneld</span><br><span class="line">[root@hdss7-21 etcd]# vim /etc/supervisord.d/flannel.ini</span><br><span class="line">[program:flanneld-7-21]</span><br><span class="line">command=/opt/flannel/flanneld.sh            ; the program (relative uses PATH, can take args)</span><br><span class="line">numprocs=1                                  ; number of processes copies to start (def 1)</span><br><span class="line">directory=/opt/flannel                      ; directory to cwd to before exec (def no cwd)</span><br><span class="line">autostart=true                              ; start at supervisord start (default: true)</span><br><span class="line">autorestart=true                            ; retstart at unexpected quit (default: true)</span><br><span class="line">startsecs=30                                ; number of secs prog must stay running (def. 1)</span><br><span class="line">startretries=3                              ; max # of serial start failures (default 3)</span><br><span class="line">exitcodes=0,2                               ; &#x27;expected&#x27; exit codes for process (default 0,2)</span><br><span class="line">stopsignal=QUIT                             ; signal used to kill process (default TERM)</span><br><span class="line">stopwaitsecs=10                             ; max num secs to wait b4 SIGKILL (default 10)</span><br><span class="line">user=root                                   ; setuid to this UNIX account to run the program</span><br><span class="line">redirect_stderr=true                        ; redirect proc stderr to stdout (default false)</span><br><span class="line">stdout_logfile=/data/logs/flanneld/flanneld.stdout.log       ; stderr log path, NONE for none; default AUTO</span><br><span class="line">stdout_logfile_maxbytes=64MB                ; max # logfile bytes b4 rotation (default 50MB)</span><br><span class="line">stdout_logfile_backups=4                    ; # of stdout logfile backups (default 10)</span><br><span class="line">stdout_capture_maxbytes=1MB                 ; number of bytes in &#x27;capturemode&#x27; (default 0)</span><br><span class="line">stdout_events_enabled=false                 ; emit events on stdout writes (default false)</span><br><span class="line">stopasgroup=true                            ;默认为false,进程被杀死时，是否向这个进程组发送stop信号，包括子进程</span><br><span class="line">killasgroup=true                            ;默认为false，向进程组发送kill信号，包括子进程</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="启动服务并检查"><a href="#启动服务并检查" class="headerlink" title="启动服务并检查"></a>启动服务并检查</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 etcd]# supervisorctl update</span><br><span class="line">flanneld-7-21: added process group</span><br><span class="line">[root@hdss7-21 etcd]# supervisorctl status</span><br><span class="line">etcd-server-7-21                 RUNNING   pid 4044, uptime 6 days, 12:02:50</span><br><span class="line">flanneld-7-21                    STARTING  </span><br><span class="line">kube-apiserver-7-21              RUNNING   pid 4048, uptime 6 days, 12:02:50</span><br><span class="line">kube-controller-manager-7-21     RUNNING   pid 4050, uptime 6 days, 12:02:50</span><br><span class="line">kube-kubelet-7-21                RUNNING   pid 4035, uptime 6 days, 12:02:50</span><br><span class="line">kube-proxy-7-21                  RUNNING   pid 4055, uptime 6 days, 12:02:50</span><br><span class="line">kube-scheduler-7-21              RUNNING   pid 4057, uptime 6 days, 12:02:50</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="测试两个node中容器跨网络通信"><a href="#测试两个node中容器跨网络通信" class="headerlink" title="测试两个node中容器跨网络通信"></a>测试两个node中容器跨网络通信</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 flannel]# ping 172.7.21.2</span><br><span class="line">PING 172.7.21.2 (172.7.21.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from 172.7.21.2: icmp_seq=1 ttl=64 time=0.146 ms</span><br><span class="line">64 bytes from 172.7.21.2: icmp_seq=2 ttl=64 time=0.126 ms</span><br><span class="line"></span><br><span class="line">[root@hdss7-21 flannel]# ping 172.7.22.2</span><br><span class="line">PING 172.7.22.2 (172.7.22.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from 172.7.22.2: icmp_seq=1 ttl=63 time=1.95 ms</span><br><span class="line">64 bytes from 172.7.22.2: icmp_seq=2 ttl=63 time=13.0 ms</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="在各运算节点上增加iptables规则"><a href="#在各运算节点上增加iptables规则" class="headerlink" title="在各运算节点上增加iptables规则"></a>在各运算节点上增加iptables规则</h2><p>注意：iptables规则各主机的略有不同，其他运算节点上执行时注意修改。</p>
+<p>因为centos7，需要安装iptables</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# yum install -y iptables-services</span><br><span class="line">[root@hdss7-21 ~]# systemctl start iptables</span><br><span class="line">[root@hdss7-21 ~]# systemctl enable iptables</span><br></pre></td></tr></table></figure>
+
+
+<p>优化SNAT规则，各运算节点之间的各POD之间的网络通信不再出网</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# iptables -t nat -D POSTROUTING -s 172.7.21.0/24 ! -o docker0 -j MASQUERADE</span><br><span class="line">[root@hdss7-21 ~]# iptables -t nat -I POSTROUTING -s 172.7.21.0/24 ! -d 172.7.0.0/16 ! -o docker0 -j MASQUERADE</span><br></pre></td></tr></table></figure>
+
+<p>10.4.7.21主机上的，来源是172.7.21.0/24段的docker的ip，目标ip不是172.7.0.0/16段，网络发包不从docker0桥设备出站的，才进行SNAT转换</p>
+<p>删除拒绝所有的规则</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# iptables-save|grep -i reject</span><br><span class="line">-A INPUT -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">-A FORWARD -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">[root@hdss7-21 ~]# iptables -t filter -D INPUT -j REJECT --reject-with icmp-host-prohibited</span><br><span class="line">[root@hdss7-21 ~]# iptables -t filter -D FORWARD -j REJECT --reject-with icmp-host-prohibited</span><br></pre></td></tr></table></figure>
+
+
+<p>测试ping</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# ping 172.7.22.2</span><br><span class="line">PING 172.7.22.2 (172.7.22.2) 56(84) bytes of data.</span><br><span class="line">64 bytes from 172.7.22.2: icmp_seq=1 ttl=63 time=4.98 ms</span><br><span class="line">64 bytes from 172.7.22.2: icmp_seq=2 ttl=63 time=4.93 ms</span><br></pre></td></tr></table></figure>
+
+
+<p>各运算节点保存iptables规则</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# iptables-save &gt;/etc/sysconfig/iptables</span><br><span class="line">[root@hdss7-21 ~]# service iptables save</span><br><span class="line">iptables: Saving firewall rules to /etc/sysconfig/iptables:[  OK  ]</span><br><span class="line">[root@hdss7-21 ~]# systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+
+<p>创建nginx-daemonset资源</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# vim nginx-ds.yml</span><br><span class="line">apiVersion: extensions/v1beta1</span><br><span class="line">kind: DaemonSet</span><br><span class="line">metadata:</span><br><span class="line">  name: nginx-ds</span><br><span class="line">  labels:</span><br><span class="line">    addonmanager.kubernetes.io/mode: Reconcile</span><br><span class="line">spec:</span><br><span class="line">  template:</span><br><span class="line">    metadata:</span><br><span class="line">      labels:</span><br><span class="line">        app: nginx-ds</span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: my-nginx</span><br><span class="line">        image: harbor.od.com/public/nginx:curl   # 带有curl的nginx自建镜像</span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 80</span><br><span class="line">[root@hdss7-21 ~]# kubectl apply -f nginx-ds.ym</span><br><span class="line">[root@hdss7-21 ~]# kubectl get pod -o wide</span><br><span class="line">NAME             READY   STATUS    RESTARTS   AGE   IP           NODE                NOMINATED NODE   READINESS GATES</span><br><span class="line">nginx-ds-wkf9w   1/1     Running   0          41m   172.7.21.2   hdss7-21.host.com   &lt;none&gt;           &lt;none&gt;</span><br><span class="line">nginx-ds-x5lrc   1/1     Running   0          41m   172.7.22.2   hdss7-22.host.com   &lt;none&gt;           &lt;none&gt;</span><br></pre></td></tr></table></figure>
+
+
+<p>curl nginx查看访问ip是那个</p>
+<p>容器网络里坦诚相待，不需要遮掩</p>
+<p>hdss7-21</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-21 ~]# kubectl exec -it nginx-ds-wkf9w sh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl 172.7.22.2</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl 172.7.22.2</span></span><br></pre></td></tr></table></figure>
+
+
+<p>hdss7-22</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">[root@hdss7-22 ~]# kubectl logs -f nginx-ds-x5lrc</span><br><span class="line">10.4.7.21 - - [29/Nov/2019:07:33:56 +0000] &quot;GET / HTTP/1.1&quot; 200 612 &quot;-&quot; &quot;curl/7.38.0&quot; &quot;-&quot;</span><br><span class="line">iptables优化后的日志</span><br><span class="line">172.7.21.2 - - [29/Nov/2019:07:41:02 +0000] &quot;GET / HTTP/1.1&quot; 200 612 &quot;-&quot; &quot;curl/7.38.0&quot; &quot;-&quot;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2019/11/29/Flannel%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/">https://wqblogs.com/2019/11/29/Flannel%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/gh/overtrue/share.js@master/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/11/29/flannel%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/"><img class="prev-cover" src="https://www.wqblogs.com/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">flannel工作原理</div></div></a></div><div class="next-post pull-right"><a href="/2019/11/17/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%9B%86%E7%BE%A4%E8%A7%84%E5%88%92/"><img class="next-cover" src="https://www.wqblogs.com/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">二进制集群规划</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">185</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">38</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">39</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/wq-h" target="_blank" title="Github"><i class="fab fa-github"></i></a><a class="social-icon" href="mailto:weiqun_h@163.com" target="_blank" title="Email"><i class="fas fa-envelope"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%9C%BA%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">主机环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E8%BD%AF%E4%BB%B6%EF%BC%8C%E8%A7%A3%E5%8E%8B"><span class="toc-number">2.</span> <span class="toc-text">下载软件，解压</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8B%B7%E8%B4%9D%E8%AF%81%E4%B9%A6"><span class="toc-number">3.</span> <span class="toc-text">拷贝证书</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">4.</span> <span class="toc-text">创建配置文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAflanneld%E5%90%AF%E5%8A%A8%E8%84%9A%E6%9C%AC"><span class="toc-number">5.</span> <span class="toc-text">创建flanneld启动脚本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%93%8D%E4%BD%9Cetcd%EF%BC%8C%E5%A2%9E%E5%8A%A0host-gw"><span class="toc-number">6.</span> <span class="toc-text">操作etcd，增加host-gw</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAsupervisor%E9%85%8D%E7%BD%AE"><span class="toc-number">7.</span> <span class="toc-text">创建supervisor配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8%E6%9C%8D%E5%8A%A1%E5%B9%B6%E6%A3%80%E6%9F%A5"><span class="toc-number">8.</span> <span class="toc-text">启动服务并检查</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95%E4%B8%A4%E4%B8%AAnode%E4%B8%AD%E5%AE%B9%E5%99%A8%E8%B7%A8%E7%BD%91%E7%BB%9C%E9%80%9A%E4%BF%A1"><span class="toc-number">9.</span> <span class="toc-text">测试两个node中容器跨网络通信</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E5%90%84%E8%BF%90%E7%AE%97%E8%8A%82%E7%82%B9%E4%B8%8A%E5%A2%9E%E5%8A%A0iptables%E8%A7%84%E5%88%99"><span class="toc-number">10.</span> <span class="toc-text">在各运算节点上增加iptables规则</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/11/22/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%9B%AE%E5%BD%95/" title="Go语言学习目录"><img src="https://wqblogs.com/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Go语言学习目录"/></a><div class="content"><a class="title" href="/2022/11/22/Go%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0%E7%9B%AE%E5%BD%95/" title="Go语言学习目录">Go语言学习目录</a><time datetime="2022-11-22T11:45:00.000Z" title="發表於 2022-11-22 19:45:00">2022-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/22/go%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="go环境配置"><img src="https://wqblogs.com/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="go环境配置"/></a><div class="content"><a class="title" href="/2022/11/22/go%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/" title="go环境配置">go环境配置</a><time datetime="2022-11-22T11:45:00.000Z" title="發表於 2022-11-22 19:45:00">2022-11-22</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/03/Java%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AENexus/" title="Java项目配置Nexus"><img src="https://wqblogs.com/image/jenkins.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Java项目配置Nexus"/></a><div class="content"><a class="title" href="/2022/11/03/Java%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AENexus/" title="Java项目配置Nexus">Java项目配置Nexus</a><time datetime="2022-11-03T11:56:49.000Z" title="發表於 2022-11-03 19:56:49">2022-11-03</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/05/12/%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8Chexo/" title="容器运行hexo"><img src="https://wqblogs.com/image/hexo/hexo.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="容器运行hexo"/></a><div class="content"><a class="title" href="/2022/05/12/%E5%AE%B9%E5%99%A8%E8%BF%90%E8%A1%8Chexo/" title="容器运行hexo">容器运行hexo</a><time datetime="2022-05-12T05:50:00.000Z" title="發表於 2022-05-12 13:50:00">2022-05-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/05/12/docker_buildx_install/" title="Docker buildx构建多架构镜像"><img src="https://wqblogs.com/image/docker/docker_build.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Docker buildx构建多架构镜像"/></a><div class="content"><a class="title" href="/2022/05/12/docker_buildx_install/" title="Docker buildx构建多架构镜像">Docker buildx构建多架构镜像</a><time datetime="2022-05-12T02:50:00.000Z" title="發表於 2022-05-12 10:50:00">2022-05-12</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2022 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://wqblogs.com/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://wqblogs.com/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="translateLink" type="button" title="簡繁轉換">繁</button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到頂部"><i class="fas fa-arrow-up"></i></button></div></div><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div id="local-search-results"></div></div></div><div id="search-mask"></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="/js/tw_cn.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script><script src="/js/search/local-search.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
