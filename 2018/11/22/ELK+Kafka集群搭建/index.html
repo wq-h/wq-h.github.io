@@ -1,0 +1,305 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>ELK+Kafka集群搭建 | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="ELK介绍ELK是三个开源软件的缩写，分别表示：Elasticsearch , Logstash, Kibana , 它们都是开源软件。新增了一个FileBeat，它是一个轻量级的日志收集处理工具(Agent)，Filebeat占用资源少，适合于在各个服务器上搜集日志后传输给Logstash，官方也推荐此工具。 Elasticsearch是个开源分布式搜索引擎，提供搜集、分析、存储数据三大功能。它">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ELK+Kafka集群搭建">
+<meta property="og:url" content="https://wqblogs.com/2018/11/22/ELK+Kafka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="ELK介绍ELK是三个开源软件的缩写，分别表示：Elasticsearch , Logstash, Kibana , 它们都是开源软件。新增了一个FileBeat，它是一个轻量级的日志收集处理工具(Agent)，Filebeat占用资源少，适合于在各个服务器上搜集日志后传输给Logstash，官方也推荐此工具。 Elasticsearch是个开源分布式搜索引擎，提供搜集、分析、存储数据三大功能。它">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com:4443/image/default.png">
+<meta property="article:published_time" content="2018-11-22T22:03:47.000Z">
+<meta property="article:modified_time" content="2023-06-24T15:59:29.000Z">
+<meta property="article:author" content="chongzi">
+<meta property="article:tag" content="elk">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com:4443/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2018/11/22/ELK+Kafka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'ELK+Kafka集群搭建',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-24 23:59:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com:4443/image/default.png')"><nav id="nav"><span id="blog-info"><a href="/" title="虫子个人博客"><span class="site-name">虫子个人博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">ELK+Kafka集群搭建</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2018-11-22T22:03:47.000Z" title="發表於 2018-11-23 06:03:47">2018-11-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-06-24T15:59:29.000Z" title="更新於 2023-06-24 23:59:29">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/ELK/">ELK</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="ELK+Kafka集群搭建"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="ELK介绍"><a href="#ELK介绍" class="headerlink" title="ELK介绍"></a><strong>ELK介绍</strong></h2><p>ELK是三个开源软件的缩写，分别表示：Elasticsearch , Logstash, Kibana , 它们都是开源软件。新增了一个FileBeat，它是一个轻量级的日志收集处理工具(Agent)，Filebeat占用资源少，适合于在各个服务器上搜集日志后传输给Logstash，官方也推荐此工具。 Elasticsearch是个开源分布式搜索引擎，提供搜集、分析、存储数据三大功能。它的特点有：分布式，零配置，自动发现，索引自动分片，索引副本机制，restful风格接口，多数据源，自动搜索负载等。 Logstash 主要是用来日志的搜集、分析、过滤日志的工具，支持大量的数据获取方式。一般工作方式为c&#x2F;s架构，client端安装在需要收集日志的主机上，server端负责将收到的各节点日志进行过滤、修改等操作在一并发往elasticsearch上去。 Kibana 也是一个开源和免费的工具，Kibana可以为 Logstash 和 ElasticSearch 提供的日志分析友好的 Web 界面，可以帮助汇总、分析和搜索重要数据日志。 <strong>Zookeeper+Kakfa</strong> kafka 是一个分布式的基于push-subscribe的消息系统，它具备快速、可扩展、可持久化的特点。它现在是Apache旗下的一个开源系统，作为Hadoop生态系统的一部分，被各种商业公司广泛应用。它的最大的特性就是可以实时的处理大量数据以满足各种需求场景：比如基于hadoop的批处理系统、低延迟的实时系统、storm&#x2F;spark流式处理引擎。 特点：<br> <span id="more"></span></p>
+<ul>
+<li><strong>高吞吐量、低延迟</strong>：kafka每秒可以处理几十万条消息，它的延迟最低只有几毫秒</li>
+<li><strong>可扩展性</strong>：kafka集群支持热扩展</li>
+<li><strong>持久性、可靠性</strong>：消息被持久化到本地磁盘，并且支持数据备份防止数据丢失</li>
+<li><strong>容错性</strong>：允许集群中节点失败（若副本数量为n,则允许n-1个节点失败）</li>
+<li><strong>高并发</strong>：支持数千个客户端同时读写</li>
+</ul>
+<p>ZooKeeper是一个分布式的，开放源码的分布式应用程序协调服务，它包含一个简单的原语集，分布式应用程序可以基于它实现同步服务，配置维护和命名服务等。 集群角色：</p>
+<ul>
+<li>Leader服务器是整个zookeeper集群工作机制中的核心</li>
+<li>Follower服务器是zookeeper集群状态的跟随者</li>
+<li>Observer 服务器充当一个观察者的角色</li>
+</ul>
+<h2 id="虚拟机准备环境"><a href="#虚拟机准备环境" class="headerlink" title="虚拟机准备环境"></a><strong>虚拟机准备环境</strong></h2><table>
+<thead>
+<tr>
+<th>主机名</th>
+<th>IP</th>
+<th>备住</th>
+<th>内存+磁盘</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ELK01</td>
+<td>10.0.0.20&#x2F;172.16.1.20</td>
+<td>ES+logstash+kibana</td>
+<td>4G+100G</td>
+</tr>
+<tr>
+<td>ELK02</td>
+<td>10.0.0.21&#x2F;172.16.1.21</td>
+<td>ES+logstash</td>
+<td>3G+100G</td>
+</tr>
+<tr>
+<td>ZK01</td>
+<td>10.0.0.30&#x2F;172.16.1.30</td>
+<td>Zookeeper+Kafka</td>
+<td>2G+100G</td>
+</tr>
+<tr>
+<td>ZK02</td>
+<td>10.0.0.31&#x2F;172.16.1.31</td>
+<td>Zookeeper+Kafka</td>
+<td>2G+100G</td>
+</tr>
+<tr>
+<td>ZK03</td>
+<td>10.0.0.32&#x2F;172.16.1.32</td>
+<td>Zookeeper+Kafka</td>
+<td>2G+100G</td>
+</tr>
+<tr>
+<td>online01</td>
+<td>10.0.0.40&#x2F;172.16.1.40</td>
+<td>filebeat</td>
+<td>2G+100G</td>
+</tr>
+<tr>
+<td>online02</td>
+<td>10.0.0.41&#x2F;172.16.1.41</td>
+<td>filebeat</td>
+<td>2G+100G</td>
+</tr>
+</tbody></table>
+<p>系统版本</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> /etc/redhat-release</span></span><br><span class="line">CentOS Linux release 7.4.1708 (Core)</span><br></pre></td></tr></table></figure>
+
+
+<p>防火墙与selinux</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl status firewalld.service</span></span><br><span class="line">	* firewalld.service - firewalld - dynamic firewall daemon</span><br><span class="line">Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)</span><br><span class="line">Active: inactive (dead)</span><br><span class="line">Docs: man:firewalld(1)</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">sestatus</span></span><br><span class="line">SELinux status:                 disabled</span><br></pre></td></tr></table></figure>
+
+<p>内存</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">free -m</span></span><br><span class="line">total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:           1984         105         870           8        1008        1691</span><br><span class="line">Swap:          1023           0        1023</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="ELK集群部署"><a href="#ELK集群部署" class="headerlink" title="ELK集群部署"></a><strong>ELK集群部署</strong></h2><h3 id="安装jdk（所有）"><a href="#安装jdk（所有）" class="headerlink" title="安装jdk（所有）"></a>安装jdk（所有）</h3><p><a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1wnS1HhAil4n1_ysQh56jPA">https://pan.baidu.com/s/1wnS1HhAil4n1_ysQh56jPA</a> jdk百度云链接</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> /server/tools</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tar xf jdk-8u60-linux-x64.tar.gz -C /opt</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">mv</span> /opt/jdk1.8.0_60/ /opt/jdk/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/profile</span></span><br><span class="line">export JAVA_HOME=/opt/jdk</span><br><span class="line">export JRE_HOME=/opt/jdk/jre</span><br><span class="line">export PATH=$JAVA_HOME/bin:$JAVA_HOME/jre/bin:$PATH</span><br><span class="line">export CLASSPATH=.$CLASSPATH:$JAVA_HOME/lib:$JAVA_HOME/jre/lib:$JAVA_HOME/lib/tools.jar</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">source</span> /etc/profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">java -version</span></span><br><span class="line">java version &quot;1.8.0_60&quot;</span><br><span class="line">Java(TM) SE Runtime Environment (build 1.8.0_60-b27)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 25.60-b23, mixed mode)</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">ln</span> -s /opt/jdk/bin/java /usr/bin/java</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="安装elasticsearch（Elk集群）"><a href="#安装elasticsearch（Elk集群）" class="headerlink" title="安装elasticsearch（Elk集群）"></a>安装elasticsearch（Elk集群）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.2.4.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh elasticsearch-6.2.4.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl <span class="built_in">enable</span> elasticsearch.service</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> &gt;&gt; /etc/hosts &lt;&lt;<span class="string">EOF</span></span></span><br><span class="line">10.0.0.20 elk01</span><br><span class="line">10.0.0.21 elk02</span><br><span class="line">10.0.0.30 zk01</span><br><span class="line">10.0.0.31 zk02</span><br><span class="line">10.0.0.32 zk03</span><br><span class="line">10.0.0.40 online01</span><br><span class="line">10.0.0.41 online02</span><br><span class="line">EOF</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">mkdir -p /elk/&#123;data,logs&#125;</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">chown -R elasticsearch.elasticsearch /elk</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="string">vim /etc/elasticsearch/elasticsearch.yml</span></span></span><br></pre></td></tr></table></figure>
+
+
+<p>elk01配置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">grep -v <span class="string">&#x27;^#&#x27;</span> /etc/elasticsearch/elasticsearch.yml</span></span><br><span class="line">cluster.name: ELK                                     #集群名称</span><br><span class="line">node.name: elk01                                      #节点名称</span><br><span class="line">path.data: /elk/data                                  #data存储路径</span><br><span class="line">path.logs: /elk/logs                                  #log存储路径</span><br><span class="line">network.host: 0.0.0.0                                 #监听地址</span><br><span class="line">http.port: 9200                                       #监听端口</span><br><span class="line">discovery.zen.ping.unicast.hosts: [&quot;elk01&quot;, &quot;elk02&quot;]  #集群节点发现列表</span><br><span class="line">discovery.zen.minimum_master_nodes: 1                 #集群可做master的最小节点数</span><br><span class="line">node.master: true                                     #指定该节点是否有资格被选举成为node，默认是true，es是默认集群中的第一台机器为master，如果这台机挂了就会重新选举master</span><br><span class="line">node.data: true                                       # 指定该节点是否存储索引数据，默认为true</span><br><span class="line">transport.tcp.compress: true                          #设置是否压缩tcp传输时的数据，默认为false，不压缩</span><br><span class="line">http.cors.enabled: true                               #开启跨域访问支持，默认为false</span><br><span class="line">http.cors.allow-origin: &quot;*&quot;                           # 跨域访问允许的域名地址</span><br></pre></td></tr></table></figure>
+
+
+<p>elk02配置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">grep -v <span class="string">&#x27;^#&#x27;</span> /etc/elasticsearch/elasticsearch.yml</span></span><br><span class="line">cluster.name: ELK</span><br><span class="line">node.name: elk02</span><br><span class="line">path.data: /elk/data</span><br><span class="line">path.logs: /elk/logs</span><br><span class="line">network.host: 0.0.0.0</span><br><span class="line">http.port: 9200</span><br><span class="line">discovery.zen.ping.unicast.hosts: [&quot;elk01&quot;, &quot;elk02&quot;]</span><br><span class="line">gateway.recover_after_nodes: 1</span><br><span class="line">node.master: false</span><br><span class="line">node.data: true</span><br><span class="line">transport.tcp.compress: true</span><br><span class="line">http.cors.enabled: true</span><br><span class="line">http.cors.allow-origin: &quot;*&quot;</span><br></pre></td></tr></table></figure>
+
+
+<p>启动</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl start elasticsearch.service</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">netstat -luntp|grep 9</span></span><br><span class="line">tcp6       0      0 :::9200                 :::*                    LISTEN      2658/java</span><br><span class="line">tcp6       0      0 :::9300                 :::*                    LISTEN      2658/java</span><br></pre></td></tr></table></figure>
+
+
+<p>查看集群状态</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">curl -XGET <span class="string">&#x27;http://10.0.0.20:9200/_cluster/health?pretty&#x27;</span></span></span><br><span class="line">&#123;</span><br><span class="line">&quot;cluster_name&quot; : &quot;ELK&quot;,</span><br><span class="line">&quot;status&quot; : &quot;green&quot;,</span><br><span class="line">&quot;timed_out&quot; : false,</span><br><span class="line">&quot;number_of_nodes&quot; : 2,</span><br><span class="line">&quot;number_of_data_nodes&quot; : 2,</span><br><span class="line">&quot;active_primary_shards&quot; : 0,</span><br><span class="line">&quot;active_shards&quot; : 0,</span><br><span class="line">&quot;relocating_shards&quot; : 0,</span><br><span class="line">&quot;initializing_shards&quot; : 0,</span><br><span class="line">&quot;unassigned_shards&quot; : 0,</span><br><span class="line">&quot;delayed_unassigned_shards&quot; : 0,</span><br><span class="line">&quot;number_of_pending_tasks&quot; : 0,</span><br><span class="line">&quot;number_of_in_flight_fetch&quot; : 0,</span><br><span class="line">&quot;task_max_waiting_in_queue_millis&quot; : 0,</span><br><span class="line">&quot;active_shards_percent_as_number&quot; : 100.0</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="安装head插件"><a href="#安装head插件" class="headerlink" title="安装head插件"></a>安装head插件</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">yum install -y git npm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> /usr/local/src/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> git://github.com/mobz/elasticsearch-head.git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> elasticsearch-head/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">npm install grunt -save</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">npm install</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">npm run start &amp;</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="kibana安装汉化（elk01）"><a href="#kibana安装汉化（elk01）" class="headerlink" title="kibana安装汉化（elk01）"></a>kibana安装汉化（elk01）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://artifacts.elastic.co/downloads/kibana/kibana-6.2.4-x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh kibana-6.2.4-x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/kibana/kibana.yml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">egrep -v <span class="string">&#x27;^#|^$&#x27;</span> /etc/kibana/kibana.yml</span></span><br><span class="line">server.port: 5601</span><br><span class="line">server.host: &quot;172.17.1.20&quot; #内网地址</span><br><span class="line">elasticsearch.url: &quot;http://10.0.0.20:9200&quot;</span><br><span class="line">logging.dest: /var/log/kibana.log</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">touch</span> /var/log/kibana.log ; <span class="built_in">chmod</span> 777 /var/log/kibana.log</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/anbai-inc/Kibana_Hanization.git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> Kibana_Hanization/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">python main.py /usr/share/kibana/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl <span class="built_in">enable</span> kibana.service</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl start kibana.service</span></span><br></pre></td></tr></table></figure>
+
+
+<p>nginx验证登录kibana</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://artifacts.elastic.co/downloads/kibana/kibana-6.2.4-x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh kibana-6.2.4-x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/kibana/kibana.yml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">egrep -v <span class="string">&#x27;^#|^$&#x27;</span> /etc/kibana/kibana.yml</span></span><br><span class="line">server.port: 5601</span><br><span class="line">server.host: &quot;172.17.1.20&quot; #内网地址</span><br><span class="line">elasticsearch.url: &quot;http://10.0.0.20:9200&quot;</span><br><span class="line">logging.dest: /var/log/kibana.log</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">touch</span> /var/log/kibana.log ; <span class="built_in">chmod</span> 777 /var/log/kibana.log</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">git <span class="built_in">clone</span> https://github.com/anbai-inc/Kibana_Hanization.git</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> Kibana_Hanization/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">python main.py /usr/share/kibana/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl <span class="built_in">enable</span> kibana.service</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl start kibana.service</span></span><br><span class="line">nginx验证登录kibana</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">yum -y install epel-release nginx httpd-tools</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/nginx/nginx.conf</span></span><br><span class="line">server &#123;</span><br><span class="line">listen 80;</span><br><span class="line">server_name elk01;</span><br><span class="line">auth_basic &quot;Restricted Access&quot;;</span><br><span class="line">auth_basic_user_file /etc/nginx/kibana-user;</span><br><span class="line">location / &#123;</span><br><span class="line">proxy_pass http://172.16.1.20:5601;</span><br><span class="line">proxy_http_version 1.1;</span><br><span class="line">proxy_set_header Upgrade $http_upgrade;</span><br><span class="line">proxy_set_header Connection &#x27;upgrade&#x27;;</span><br><span class="line">proxy_set_header Host $host;</span><br><span class="line">proxy_cache_bypass $http_upgrade;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">htpasswd -cm /etc/nginx/kibana-user kibana</span></span><br><span class="line">New password:</span><br><span class="line">Re-type new password:</span><br><span class="line">Adding password for user kibana</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">nginx</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="logstash安装-ELK集群"><a href="#logstash安装-ELK集群" class="headerlink" title="logstash安装(ELK集群)"></a>logstash安装(ELK集群)</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://artifacts.elastic.co/downloads/logstash/logstash-6.4.2.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh logstash-6.4.2.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/logstash/logstash.yml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">egrep -v <span class="string">&#x27;^#|^$&#x27;</span> /etc/logstash/logstash.yml</span></span><br><span class="line">path.data: /var/lib/logstash</span><br><span class="line">http.host: &quot;10.0.0.20&quot;</span><br><span class="line">path.logs: /var/log/logstash</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl <span class="built_in">enable</span> logstash.service</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="ZK集群部署"><a href="#ZK集群部署" class="headerlink" title="ZK集群部署"></a><strong>ZK集群部署</strong></h2><h3 id="安装zookeeper"><a href="#安装zookeeper" class="headerlink" title="安装zookeeper"></a>安装zookeeper</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget http://mirror.bit.edu.cn/apache/zookeeper/stable/zookeeper-3.4.12.tar.gz</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tar -xf zookeeper-3.4.12.tar.gz -C /application/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">mv</span> zookeeper-3.4.12/ zookeeper</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cp</span> zookeeper/conf/zoo_sample.cfg zookeeper/conf/zoo.cfg</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">mkdir</span> -p zookeeper/&#123;<span class="built_in">log</span>,/data&#125;</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim zookeeper/conf/zoo.cfg</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">egrep -v <span class="string">&#x27;^#|^$&#x27;</span> zookeeper/conf/zoo.cfg</span></span><br><span class="line">tickTime=2000</span><br><span class="line">initLimit=10</span><br><span class="line">syncLimit=5</span><br><span class="line">dataDir=/application/zookeeper/data</span><br><span class="line">dataLogDir=/application/zookeeper/log</span><br><span class="line">clientPort=2181</span><br><span class="line">server.1=10.0.0.30:2888:3888</span><br><span class="line">server.2=10.0.0.31:2888:3888</span><br><span class="line">server.3=10.0.0.32:2888:3888</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> zookeeper/data/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">touch</span> myid |<span class="built_in">echo</span> 1 &gt; myid</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">touch</span> myid |<span class="built_in">echo</span> 2 &gt; myid</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">touch</span> myid |<span class="built_in">echo</span> 3 &gt; myid</span></span><br><span class="line">注：</span><br><span class="line">在配置的dataDir 下创建myid 文件，内容就是对应的你当前 ip 下的 server.x</span><br><span class="line">例：server的ip为10.0.0.30文件中的是server.1=10.0.0.30:2888:3888 myid 对应的内容就是 1</span><br><span class="line">server的ip为10.0.0.31 文件中的是server.2=10.0.0.31:2888:3888 myid 对应的内容就是 2</span><br><span class="line">即：server.x  =&gt;  myid = x</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/zookeeper/bin/zkServer.sh start    <span class="comment">#启动zookeeper（每台）</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/zookeeper/bin/zkServer.sh status   <span class="comment">#查看三台zookeeper集群状态，正确的是一主两从</span></span></span><br><span class="line">Mode: follower</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/zookeeper/bin/zkServer.sh status</span></span><br><span class="line">Mode: leader</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/zookeeper/bin/zkServer.sh status</span></span><br><span class="line">Mode: follower</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="安装kafka"><a href="#安装kafka" class="headerlink" title="安装kafka"></a>安装kafka</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget http://mirror.bit.edu.cn/apache/kafka/2.0.0/kafka_2.11-2.0.0.tgz</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tar xf kafka_2.11-2.0.0.tgz -C /application/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> /application/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">mv</span> kafka_2.11-2.0.0/ kafka</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">mkdir</span> -p kafka/log</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim kafka/config/server.properties</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">egrep -v <span class="string">&#x27;^$|^#&#x27;</span> kafka/config/server.properties</span></span><br><span class="line">broker.id=1        #每台id不同</span><br><span class="line">listeners=PLAINTEXT://10.0.0.30:9092</span><br><span class="line">num.network.threads=3</span><br><span class="line">num.io.threads=8</span><br><span class="line">socket.send.buffer.bytes=102400</span><br><span class="line">socket.receive.buffer.bytes=102400</span><br><span class="line">socket.request.max.bytes=104857600</span><br><span class="line">log.dirs=/application/kafka/log</span><br><span class="line">num.partitions=1</span><br><span class="line">num.recovery.threads.per.data.dir=1</span><br><span class="line">offsets.topic.replication.factor=1</span><br><span class="line">transaction.state.log.replication.factor=1</span><br><span class="line">transaction.state.log.min.isr=1</span><br><span class="line">log.retention.hours=168</span><br><span class="line">log.segment.bytes=1073741824</span><br><span class="line">log.retention.check.interval.ms=300000</span><br><span class="line">zookeeper.connect=10.0.0.30:2181,10.0.0.31:2181,10.0.0.32:2181</span><br><span class="line">zookeeper.connection.timeout.ms=6000</span><br><span class="line">启动服务（所有）</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/kafka/bin/kafka-server-start.sh -daemon /application/kafka/config/server.properties</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">netstat -luntp|grep 9092   <span class="comment">#kafka</span></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">netstat -luntp|grep 2181   <span class="comment">#zookeeper</span></span></span><br><span class="line">测试消息生产和消费</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/kafka/bin/kafka-topics.sh --create --zookeeper 10.0.0.30:2181 --replication-factor 1 --partitions 1 --topic <span class="built_in">test</span>             <span class="comment">#创建topic</span></span></span><br><span class="line">Created topic &quot;test&quot;.</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/kafka/bin/kafka-topics.sh --list --zookeeper 10.0.0.30:2181</span> </span><br><span class="line">test                                  #查看创建的topic</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/kafka/bin/kafka-console-producer.sh --broker-list 10.0.0.30:9092 --topic <span class="built_in">test</span></span>   </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"><span class="string">&quot;Hello World!&quot;</span>                       <span class="comment">#模拟客户端发送消息(开2个终端效果会更好)</span></span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"><span class="built_in">exit</span></span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># /application/kafka/bin/kafka-console-consumer.sh --bootstrap-server 10.0.0.30:9092 --topic test --from-beginning</span></span>     </span><br><span class="line">&quot;Hello World!&quot;                         #模拟客户端接收信息 </span><br><span class="line">exit</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/kafka/bin/kafka-topics.sh --delete --zookeeper 10.0.0.30:2181 --topic <span class="built_in">test</span></span></span><br><span class="line">Topic test is marked for deletion.     #删除topic</span><br><span class="line">Note: This will have no impact if delete.topic.enable is not set to true.</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="filebeat安装-online集群"><a href="#filebeat安装-online集群" class="headerlink" title="filebeat安装(online集群)"></a><strong>filebeat安装(online集群)</strong></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.4.2-x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">rpm -ivh filebeat-6.4.2-x86_64.rpm</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/etc/init.d/filebeat start                   <span class="comment">#启动程序</span></span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="filebeat配置收集业务日志"><a href="#filebeat配置收集业务日志" class="headerlink" title="filebeat配置收集业务日志"></a><strong>filebeat配置收集业务日志</strong></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/filebeat/filebeat.yml</span></span><br><span class="line">filebeat.prospectors:</span><br><span class="line">- type: log</span><br><span class="line">  enabled: true</span><br><span class="line">  paths:</span><br><span class="line">    - /var/log/messages</span><br><span class="line">  fields:</span><br><span class="line">    log_topics: syslog</span><br><span class="line">- type: log</span><br><span class="line">  enabed: true</span><br><span class="line">  paths:</span><br><span class="line">    - /application/tomcat/logs/catalina.out</span><br><span class="line">  fields:</span><br><span class="line">    log_topics: tomcat</span><br><span class="line">output.kafka:</span><br><span class="line">  enabled: true</span><br><span class="line">  hosts: [&quot;10.0.0.30:9092&quot;,&quot;10.0.0.31:9092&quot;,&quot;10.0.0.32:9092&quot;]</span><br><span class="line">  topic: &#x27;%&#123;[fields.log_topics]&#125;&#x27;</span><br><span class="line">  partition.hash:</span><br><span class="line">    reachable_only: false</span><br><span class="line">  compression: gzip</span><br><span class="line">  max_message_bytes: 1000000</span><br><span class="line">  required_acks: 1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/etc/init.d/filebeat start</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="测试kafka是否接受到数据"><a href="#测试kafka是否接受到数据" class="headerlink" title="测试kafka是否接受到数据"></a><strong>测试kafka是否接受到数据</strong></h3><p>online发出一个信息</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">echo</span> <span class="string">&#x27;hello word!!!&#x27;</span> &gt;&gt; /application/tomcat/logs/catalina.out! &gt;&gt; /application/tomcat/logs/catalina.out</span></span><br></pre></td></tr></table></figure>
+
+
+<p>查看kafka是否接受数据 [root@zk01 ~]</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">/application/kafka/bin/kafka-console-consumer.sh --bootstrap-server 10.0.0.30:9092,10.0.0.31:9092,10.0.0.32:9092 --topic tomcat --from-beginning</span></span><br><span class="line">&#123;&quot;@timestamp&quot;:&quot;2018-11-08T10:30:11.723Z&quot;,&quot;@metadata&quot;:&#123;&quot;beat&quot;:&quot;filebeat&quot;,&quot;type&quot;:&quot;doc&quot;,&quot;version&quot;:&quot;6.4.2&quot;,&quot;topic&quot;:&quot;tomcat&quot;&#125;,&quot;prospector&quot;:&#123;&quot;type&quot;:&quot;log&quot;&#125;,&quot;input&quot;:&#123;&quot;type&quot;:&quot;log&quot;&#125;,&quot;fields&quot;:&#123;&quot;log_topics&quot;:&quot;tomcat&quot;&#125;,&quot;host&quot;:&#123;&quot;name&quot;:&quot;online02&quot;&#125;,&quot;beat&quot;:&#123;&quot;name&quot;:&quot;online02&quot;,&quot;hostname&quot;:&quot;online02&quot;,&quot;version&quot;:&quot;6.4.2&quot;&#125;,&quot;source&quot;:&quot;/application/tomcat/logs/catalina.out&quot;,&quot;offset&quot;:6612,&quot;message&quot;:&quot;hello word!!!&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="配置logstash从ZK将日志传入ES"><a href="#配置logstash从ZK将日志传入ES" class="headerlink" title="配置logstash从ZK将日志传入ES"></a><strong>配置logstash从ZK将日志传入ES</strong></h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> /etc/logstash/conf.d/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim logstash.conf</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cat</span> logstash.conf</span></span><br><span class="line">input&#123;</span><br><span class="line">  kafka &#123;</span><br><span class="line">    type =&gt; &quot;tomcat&quot;</span><br><span class="line">    bootstrap_servers =&gt; &quot;10.0.0.30:9092,10.0.0.31:9092,10.0.0.32:9092&quot;</span><br><span class="line">    group_id =&gt; &quot;ecs&quot;    #logstash 集群需相同</span><br><span class="line">    topics =&gt; [&quot;tomcat&quot;]</span><br><span class="line">  &#125;</span><br><span class="line">  kafka &#123;</span><br><span class="line">    type =&gt; &quot;syslog&quot;</span><br><span class="line">    bootstrap_servers =&gt; &quot;10.0.0.30:9092,10.0.0.31:9092,10.0.0.32:9092&quot;</span><br><span class="line">    group_id =&gt; &quot;ecs1&quot;</span><br><span class="line">    topics =&gt; [&quot;syslog&quot;]</span><br><span class="line">    codec =&gt; &quot;json&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;    </span><br><span class="line">filter &#123;</span><br><span class="line">  if [type] == &quot;tomcat&quot; &#123;</span><br><span class="line">    grok &#123;</span><br><span class="line">      match =&gt; &#123; &quot;message&quot; =&gt; &quot;%&#123;COMBINEDAPACHELOG&#125;&quot;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">output &#123;</span><br><span class="line">  if [type] == &quot;tomcat&quot; &#123;</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">      hosts =&gt; [&quot;10.0.0.20:9200&quot;,&quot;10.0.0.21:9200&quot;]</span><br><span class="line">      index =&gt; &quot;tomcat-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  if [type] == &quot;syslog&quot; &#123;</span><br><span class="line">    elasticsearch &#123;</span><br><span class="line">      hosts =&gt; [&quot;10.0.0.20:9200&quot;,&quot;10.0.0.21:9200&quot;]</span><br><span class="line">      index =&gt; &quot;syslog-%&#123;+YYYY.MM.dd&#125;&quot;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<p>测试logstash是否拉取数据</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash">  <span class="built_in">echo</span> 121212 &gt;&gt; /application/tomcat/logs/catalina.out</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">  <span class="built_in">echo</span> 121212 &gt;&gt; /application/tomcat/logs/catalina.out</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">  <span class="built_in">echo</span> 121212 &gt;&gt; /application/tomcat/logs/catalina.out</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash">  <span class="built_in">echo</span> 121212 &gt;&gt; /application/tomcat/logs/catalina.out</span></span><br></pre></td></tr></table></figure>
+<p><img src="/image/elk-imgae.png"> </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2018/11/22/ELK+Kafka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/">https://wqblogs.com/2018/11/22/ELK+Kafka%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/elk/">elk</a></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com:4443/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2018/11/22/gitlab%E9%83%A8%E7%BD%B2%E4%B8%8E%E9%82%AE%E4%BB%B6%E9%85%8D%E7%BD%AE/" title="gitlab部署与邮件配置"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">gitlab部署与邮件配置</div></div></a></div><div class="next-post pull-right"><a href="/2018/11/22/redis%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6+%E5%93%A8%E5%85%B5%E5%88%87%E6%8D%A2/" title="redis主从复制+哨兵切换"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">redis主从复制+哨兵切换</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#ELK%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.</span> <span class="toc-text">ELK介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E5%87%86%E5%A4%87%E7%8E%AF%E5%A2%83"><span class="toc-number">2.</span> <span class="toc-text">虚拟机准备环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ELK%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2"><span class="toc-number">3.</span> <span class="toc-text">ELK集群部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85jdk%EF%BC%88%E6%89%80%E6%9C%89%EF%BC%89"><span class="toc-number">3.1.</span> <span class="toc-text">安装jdk（所有）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85elasticsearch%EF%BC%88Elk%E9%9B%86%E7%BE%A4%EF%BC%89"><span class="toc-number">3.2.</span> <span class="toc-text">安装elasticsearch（Elk集群）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85head%E6%8F%92%E4%BB%B6"><span class="toc-number">3.3.</span> <span class="toc-text">安装head插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#kibana%E5%AE%89%E8%A3%85%E6%B1%89%E5%8C%96%EF%BC%88elk01%EF%BC%89"><span class="toc-number">3.4.</span> <span class="toc-text">kibana安装汉化（elk01）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#logstash%E5%AE%89%E8%A3%85-ELK%E9%9B%86%E7%BE%A4"><span class="toc-number">3.5.</span> <span class="toc-text">logstash安装(ELK集群)</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ZK%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2"><span class="toc-number">4.</span> <span class="toc-text">ZK集群部署</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85zookeeper"><span class="toc-number">4.1.</span> <span class="toc-text">安装zookeeper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85kafka"><span class="toc-number">4.2.</span> <span class="toc-text">安装kafka</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#filebeat%E5%AE%89%E8%A3%85-online%E9%9B%86%E7%BE%A4"><span class="toc-number">4.3.</span> <span class="toc-text">filebeat安装(online集群)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#filebeat%E9%85%8D%E7%BD%AE%E6%94%B6%E9%9B%86%E4%B8%9A%E5%8A%A1%E6%97%A5%E5%BF%97"><span class="toc-number">4.4.</span> <span class="toc-text">filebeat配置收集业务日志</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B5%8B%E8%AF%95kafka%E6%98%AF%E5%90%A6%E6%8E%A5%E5%8F%97%E5%88%B0%E6%95%B0%E6%8D%AE"><span class="toc-number">4.5.</span> <span class="toc-text">测试kafka是否接受到数据</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AElogstash%E4%BB%8EZK%E5%B0%86%E6%97%A5%E5%BF%97%E4%BC%A0%E5%85%A5ES"><span class="toc-number">4.6.</span> <span class="toc-text">配置logstash从ZK将日志传入ES</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群"><img src="https://www.wqblogs.com:4443/image/Kubernetes.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04 lts 部署k8s集群"/></a><div class="content"><a class="title" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群">ubuntu20.04 lts 部署k8s集群</a><time datetime="2022-12-30T13:11:59.000Z" title="發表於 2022-12-30 21:11:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜"><img src="https://www.wqblogs.com:4443/image/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="multipss尝鲜"/></a><div class="content"><a class="title" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜">multipss尝鲜</a><time datetime="2022-12-30T08:00:59.000Z" title="發表於 2022-12-30 16:00:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故"><img src="https://www.wqblogs.com:4443/image/postgresql.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="postgresql生产事故"/></a><div class="content"><a class="title" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故">postgresql生产事故</a><time datetime="2022-11-27T13:16:49.000Z" title="發表於 2022-11-27 21:16:49">2022-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GO语言变量及常量"/></a><div class="content"><a class="title" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量">GO语言变量及常量</a><time datetime="2022-11-24T11:45:00.000Z" title="發表於 2022-11-24 19:45:00">2022-11-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何编写golang代码"/></a><div class="content"><a class="title" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码">如何编写golang代码</a><time datetime="2022-11-23T15:19:00.000Z" title="發表於 2022-11-23 23:19:00">2022-11-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

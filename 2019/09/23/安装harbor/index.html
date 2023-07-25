@@ -1,0 +1,205 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>安装harbor | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="安装docker-compose# yum -y install epel-release# yum install docker-compose docker     安装harbor# wget https:&#x2F;&#x2F;storage.googleapis.com&#x2F;harbor-releases&#x2F;release-1.9.0&#x2F;harbor-offline-installer-v1.9.0.tgz# ta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安装harbor">
+<meta property="og:url" content="https://wqblogs.com/2019/09/23/%E5%AE%89%E8%A3%85harbor/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="安装docker-compose# yum -y install epel-release# yum install docker-compose docker     安装harbor# wget https:&#x2F;&#x2F;storage.googleapis.com&#x2F;harbor-releases&#x2F;release-1.9.0&#x2F;harbor-offline-installer-v1.9.0.tgz# ta">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com:4443/image/default.png">
+<meta property="article:published_time" content="2019-09-23T14:21:44.000Z">
+<meta property="article:modified_time" content="2023-06-24T15:59:29.000Z">
+<meta property="article:author" content="chongzi">
+<meta property="article:tag" content="kubernetes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com:4443/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2019/09/23/%E5%AE%89%E8%A3%85harbor/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '安装harbor',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-24 23:59:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com:4443/image/default.png')"><nav id="nav"><span id="blog-info"><a href="/" title="虫子个人博客"><span class="site-name">虫子个人博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">安装harbor</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2019-09-23T14:21:44.000Z" title="發表於 2019-09-23 22:21:44">2019-09-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-06-24T15:59:29.000Z" title="更新於 2023-06-24 23:59:29">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/harbor/">harbor</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="安装harbor"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="安装docker-compose"><a href="#安装docker-compose" class="headerlink" title="安装docker-compose"></a>安装docker-compose</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">yum -y install epel-release</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">yum install docker-compose docker</span>    </span><br></pre></td></tr></table></figure>
+<h3 id="安装harbor"><a href="#安装harbor" class="headerlink" title="安装harbor"></a>安装harbor</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://storage.googleapis.com/harbor-releases/release-1.9.0/harbor-offline-installer-v1.9.0.tgz</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tar xf harbor-offline-installer-v1.9.0.tgz</span></span><br></pre></td></tr></table></figure>
+ <span id="more"></span>
+<p>修改配置文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> harbor</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim harbor.yml</span></span><br><span class="line">hostname: 10.0.0.11     # 修改主机</span><br></pre></td></tr></table></figure>
+<p>安装harbor</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">./install.sh</span>    </span><br></pre></td></tr></table></figure>
+<p>harbor启动，停止，重启命令</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker-compose start</span> </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker-comose stop</span> </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker-compose restart</span>    </span><br></pre></td></tr></table></figure>
+<h3 id="访问url"><a href="#访问url" class="headerlink" title="访问url"></a>访问url</h3><p>默认账号密码 admin Harbor12345</p>
+<p><img src="/image/1569248292-837F9335-FDDC-4B92-A649-D9C4CFF68310.jpg"></p>
+<h3 id="docker配置仓库"><a href="#docker配置仓库" class="headerlink" title="docker配置仓库"></a>docker配置仓库</h3><p>docker默认是https请求的，由于我搭的私有库是 http 的，所以需要修改 docker 配置，得修改 &#x2F;etc&#x2F;docker&#x2F;daemon.json（如果没有这个文件，自己建）</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;insecure-registries&quot;: [&quot;10.0.0.11&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemcl restart docker</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"> docker login --username=admin --password=Harbor12345 10.0.0.11</span></span><br><span class="line">WARNING! Using --password via the CLI is insecure. Use --password-stdin.</span><br><span class="line">WARNING! Your password will be stored unencrypted in /root/.docker/config.json.</span><br><span class="line">Configure a credential helper to remove this warning. See</span><br><span class="line">https://docs.docker.com/engine/reference/commandline/login/#credentials-store</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">Login Succeeded        </span><br></pre></td></tr></table></figure>
+<h3 id="上传镜像测试"><a href="#上传镜像测试" class="headerlink" title="上传镜像测试"></a>上传镜像测试</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker tag k8s.gcr.io/coredns:1.3.1 10.0.0.11/library/coredns:1.3.1</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker push 10.0.0.11/library/coredns:1.3.1</span></span><br><span class="line">The push refers to repository [10.0.0.11/library/coredns]</span><br><span class="line">c6a5fc8a3f01: Pushed</span><br><span class="line">fb61a074724d: Pushed</span><br><span class="line">1.3.1: digest: sha256:638adb0319813f2479ba3642bbe37136db8cf363b48fb3eb7dc8db634d8d5a5b size: 739    </span><br></pre></td></tr></table></figure>
+<p><img src="/image/1569248439-623ED01F-A5C5-4128-A8B0-5BDDA3D7CDDC.jpg"></p>
+<h3 id="harbor配置https"><a href="#harbor配置https" class="headerlink" title="harbor配置https"></a>harbor配置https</h3><h4 id="域名商申请ssl证书"><a href="#域名商申请ssl证书" class="headerlink" title="域名商申请ssl证书"></a>域名商申请ssl证书</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim harbor.yml</span></span><br><span class="line">hostname: harbor.test.com   # 域名</span><br><span class="line">https:</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  <span class="comment"># https port for harbor, default is 443</span></span></span><br><span class="line">  port: 443</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">  <span class="comment"># The path of cert and key files for nginx</span></span></span><br><span class="line">  certificate: /data/cert/harbor.test.com.cer       #证书存放位置</span><br><span class="line">  private_key: /data/cert/harbor.test.com.key    </span><br></pre></td></tr></table></figure>
+<p>重新生成配置文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">./prepare</span>    </span><br></pre></td></tr></table></figure>
+<p>停止harbor并删除现有实例</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker-compose down -v</span>    </span><br></pre></td></tr></table></figure>
+<p>启动harbor</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker-compose up -d</span>    </span><br></pre></td></tr></table></figure>
+<h4 id="自己创建证书"><a href="#自己创建证书" class="headerlink" title="自己创建证书"></a>自己创建证书</h4><p>生成server.key,输入4位数的密码(被强制要求)</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">openssl genrsa -des3 -out server.key 2048</span></span><br><span class="line">Generating RSA private key, 2048 bit long modulus</span><br><span class="line">........................................+++</span><br><span class="line">......................+++</span><br><span class="line">e is 65537 (0x10001)</span><br><span class="line">Enter pass phrase for server.key: 1234</span><br><span class="line">Verifying - Enter pass phrase for server.key: 1234    </span><br></pre></td></tr></table></figure>
+<p>生成server-ca.crt,输入国家、省份、城市、组织、域名(要与实际访问保持一致)、email</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">openssl req -new -key server.key -out server.csr</span></span><br><span class="line">Enter pass phrase for server.key:</span><br><span class="line">You are about to be asked to enter information that will be incorporated</span><br><span class="line">into your certificate request.</span><br><span class="line">What you are about to enter is what is called a Distinguished Name or a DN.</span><br><span class="line">There are quite a few fields but you can leave some blank</span><br><span class="line">For some fields there will be a default value,</span><br><span class="line">If you enter &#x27;.&#x27;, the field will be left blank.</span><br><span class="line">-----</span><br><span class="line">Country Name (2 letter code) [XX]:CN  国家</span><br><span class="line">State or Province Name (full name) []:BJ  省</span><br><span class="line">Locality Name (eg, city) [Default City]:BJ  市</span><br><span class="line">Organization Name (eg, company) [Default Company Ltd]:Keyida 公司名称</span><br><span class="line">Organizational Unit Name (eg, section) []:IT  组织</span><br><span class="line">Common Name (eg, your name or your server&#x27;s hostname) []:harbor.ui.com 域名</span><br><span class="line">Email Address []:admin@163.com  邮箱</span><br><span class="line">Please enter the following &#x27;extra&#x27; attributes</span><br><span class="line">to be sent with your certificate request</span><br><span class="line">A challenge password []:  </span><br><span class="line">An optional company name []:</span><br></pre></td></tr></table></figure>
+<p>去除输入密码</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cp</span> server.key server.key.org</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">openssl rsa -<span class="keyword">in</span> server.key.org -out server.key</span></span><br><span class="line">Enter pass phrase for server.key.org: 1234</span><br><span class="line">writing RSA key    </span><br></pre></td></tr></table></figure>
+<p>生成一年期限的server.crt</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">openssl x509 -req -days 365 -<span class="keyword">in</span> server.csr -signkey server.key -out server.crt</span></span><br><span class="line">Signature ok</span><br><span class="line">subject=/C=CN/ST=BJ/L=BJ/O=Keyida/OU=IT/CN=harbor.ui.com/emailAddress=admin@163.com</span><br><span class="line">Getting Private key    </span><br></pre></td></tr></table></figure>
+<p>修改harbor配置文件</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim harbor.yml</span></span><br><span class="line">hostname: harbor.ui.com</span><br><span class="line">http:</span><br><span class="line">  port: 80</span><br><span class="line">https:</span><br><span class="line">  port: 443</span><br><span class="line">  certificate: /data/cert/server.crt</span><br><span class="line">  private_key: /data/cert/server.key    </span><br></pre></td></tr></table></figure>
+<p>初始化并创建</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">./prepare</span>   </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker-compose up -d</span>    </span><br></pre></td></tr></table></figure>
+<p>指定镜像仓库地址，因为咱们创建的是不安全证书</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim /etc/docker/daemon.json</span></span><br><span class="line">&#123;</span><br><span class="line">  &quot;insecure-registries&quot;: [&quot;https://harbor.ui.com&quot;]</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">systemctl restart docker</span></span><br></pre></td></tr></table></figure>
+<p>登录harbor</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker login https://harbor.ui.com</span></span><br><span class="line">Username: admin</span><br><span class="line">Password: </span><br><span class="line">WARNING! Your password will be stored unencrypted in /root/.docker/config.json.</span><br><span class="line">Configure a credential helper to remove this warning. See</span><br><span class="line">https://docs.docker.com/engine/reference/commandline/login/#credentials-store</span><br><span class="line"></span><br><span class="line">Login Succeeded</span><br></pre></td></tr></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2019/09/23/%E5%AE%89%E8%A3%85harbor/">https://wqblogs.com/2019/09/23/%E5%AE%89%E8%A3%85harbor/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/kubernetes/">kubernetes</a></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com:4443/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/09/28/K8s%E9%83%A8%E7%BD%B2Ingress%20Traefik/" title="K8s部署Ingress Traefik"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">K8s部署Ingress Traefik</div></div></a></div><div class="next-post pull-right"><a href="/2019/09/23/nginx%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96/" title="nginx基础优化"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">nginx基础优化</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/2019/09/28/K8s%E9%83%A8%E7%BD%B2Ingress%20Traefik/" title="K8s部署Ingress Traefik"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-28</div><div class="title">K8s部署Ingress Traefik</div></div></a></div><div><a href="/2021/04/23/Kubernetes%E6%90%AD%E5%BB%BAjenkins%E9%9B%86%E7%BE%A4/" title="kubernetes实现jenkins slave动态伸缩"><img class="cover" src="https://www.wqblogs.com:4443/image/jenkins.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-04-23</div><div class="title">kubernetes实现jenkins slave动态伸缩</div></div></a></div><div><a href="/2019/10/31/Kubernetes%E7%9A%84Volume%E4%BD%BF%E7%94%A8/" title="Kubernetes的Volume使用"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-10-31</div><div class="title">Kubernetes的Volume使用</div></div></a></div><div><a href="/2019/09/21/RS%E4%B8%8EDeployment/" title="RS与Deployment"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-22</div><div class="title">RS与Deployment</div></div></a></div><div><a href="/2020/03/23/Spinnaker%E7%9A%84Armory%E5%8F%91%E8%A1%8C%E7%89%88%E9%83%A8%E7%BD%B2/" title="spinnaker的Armory发行版部署"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-23</div><div class="title">spinnaker的Armory发行版部署</div></div></a></div><div><a href="/2020/12/14/calico%E9%83%A8%E7%BD%B2/" title="calico网络"><img class="cover" src="https://www.wqblogs.com:4443/image/calico.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-14</div><div class="title">calico网络</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85docker-compose"><span class="toc-number">1.</span> <span class="toc-text">安装docker-compose</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%89%E8%A3%85harbor"><span class="toc-number">2.</span> <span class="toc-text">安装harbor</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AEurl"><span class="toc-number">3.</span> <span class="toc-text">访问url</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#docker%E9%85%8D%E7%BD%AE%E4%BB%93%E5%BA%93"><span class="toc-number">4.</span> <span class="toc-text">docker配置仓库</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8A%E4%BC%A0%E9%95%9C%E5%83%8F%E6%B5%8B%E8%AF%95"><span class="toc-number">5.</span> <span class="toc-text">上传镜像测试</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#harbor%E9%85%8D%E7%BD%AEhttps"><span class="toc-number">6.</span> <span class="toc-text">harbor配置https</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9F%9F%E5%90%8D%E5%95%86%E7%94%B3%E8%AF%B7ssl%E8%AF%81%E4%B9%A6"><span class="toc-number">6.1.</span> <span class="toc-text">域名商申请ssl证书</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%87%AA%E5%B7%B1%E5%88%9B%E5%BB%BA%E8%AF%81%E4%B9%A6"><span class="toc-number">6.2.</span> <span class="toc-text">自己创建证书</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群"><img src="https://www.wqblogs.com:4443/image/Kubernetes.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04 lts 部署k8s集群"/></a><div class="content"><a class="title" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群">ubuntu20.04 lts 部署k8s集群</a><time datetime="2022-12-30T13:11:59.000Z" title="發表於 2022-12-30 21:11:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜"><img src="https://www.wqblogs.com:4443/image/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="multipss尝鲜"/></a><div class="content"><a class="title" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜">multipss尝鲜</a><time datetime="2022-12-30T08:00:59.000Z" title="發表於 2022-12-30 16:00:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故"><img src="https://www.wqblogs.com:4443/image/postgresql.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="postgresql生产事故"/></a><div class="content"><a class="title" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故">postgresql生产事故</a><time datetime="2022-11-27T13:16:49.000Z" title="發表於 2022-11-27 21:16:49">2022-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GO语言变量及常量"/></a><div class="content"><a class="title" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量">GO语言变量及常量</a><time datetime="2022-11-24T11:45:00.000Z" title="發表於 2022-11-24 19:45:00">2022-11-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何编写golang代码"/></a><div class="content"><a class="title" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码">如何编写golang代码</a><time datetime="2022-11-23T15:19:00.000Z" title="發表於 2022-11-23 23:19:00">2022-11-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

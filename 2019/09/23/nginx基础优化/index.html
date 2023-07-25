@@ -1,0 +1,179 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>nginx基础优化 | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="nginx配置文件优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nginx基础优化">
+<meta property="og:url" content="https://wqblogs.com/2019/09/23/nginx%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="nginx配置文件优化">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com:4443/image/default.png">
+<meta property="article:published_time" content="2019-09-23T08:54:56.000Z">
+<meta property="article:modified_time" content="2023-06-24T15:59:29.000Z">
+<meta property="article:author" content="chongzi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com:4443/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2019/09/23/nginx%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'nginx基础优化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2023-06-24 23:59:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com:4443/image/default.png')"><nav id="nav"><span id="blog-info"><a href="/" title="虫子个人博客"><span class="site-name">虫子个人博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">nginx基础优化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2019-09-23T08:54:56.000Z" title="發表於 2019-09-23 16:54:56">2019-09-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-06-24T15:59:29.000Z" title="更新於 2023-06-24 23:59:29">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/nginx/">nginx</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="nginx基础优化"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>nginx配置文件优化</p>
+<span id="more"></span>
+<figure class="highlight nginx"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 普通用户登录</span></span><br><span class="line"><span class="attribute">user</span> www www;           <span class="comment"># 定义www为启动用户，不推荐root用户</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 进程绑定cpu</span></span><br><span class="line"><span class="attribute">worker_processes</span>  <span class="number">2</span>;        <span class="comment"># cpu核数</span></span><br><span class="line"><span class="attribute">worker_cpu_affinity</span> <span class="number">01</span> <span class="number">10</span>;  <span class="comment"># 表示开启两个进程，第一个进程对应01，第二个进程对应10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx最大打开文件数</span></span><br><span class="line"><span class="attribute">worker_rlimit_nofile</span> <span class="number">65535</span>; <span class="comment"># 表示开启nginx的worker进程打开最大文件数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx事件处理模型</span></span><br><span class="line"><span class="section">events</span> &#123;</span><br><span class="line">    <span class="attribute">use</span> <span class="literal">epoll</span>;                 <span class="comment"># 使用epoll模型</span></span><br><span class="line">    <span class="attribute">worker_connections</span> <span class="number">65535</span>;  <span class="comment"># 单个进程允许的客户端最大连接数</span></span><br><span class="line">    <span class="attribute">multi_accept</span> <span class="literal">on</span>;           <span class="comment"># 告诉nginx收到一个新连接通知后接受尽可能多的连接，默认是on，设置为on后，多个worker按串行方式来处理连接，也就是一个连接只有一个worker被唤醒，其他的处于休眠状态，设置为off后，多个worker按并行方式来处理连接，也就是一个连接会唤醒所有的worker，直到连接分配完毕，没有取得连接的继续休眠</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="section">http</span> &#123;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 高速传输模式</span></span><br><span class="line">    <span class="attribute">include</span>       mime.types;   </span><br><span class="line">    <span class="attribute">default_type</span>  application/octet-stream;</span><br><span class="line">    <span class="attribute">sendfile</span>      <span class="literal">on</span>;  <span class="comment"># 开启高效文件传输模式</span></span><br><span class="line">    <span class="attribute">tcp_nopush</span>    <span class="literal">on</span>;  <span class="comment"># 必须在sendfile开启模式才有效，防止网路阻塞，积极的减少网络报文段的数量</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接超时时间</span></span><br><span class="line">    <span class="attribute">keepalive_timeout</span>  <span class="number">65</span>;  <span class="comment"># 可短连接保持会话超时时间，超过这个时间，服务器会断开这个连接</span></span><br><span class="line">    <span class="attribute">tcp_nodelay</span> <span class="literal">on</span>;         <span class="comment"># 防止网络堵塞</span></span><br><span class="line">    <span class="attribute">open_file_cache</span> max=<span class="number">65535</span> inactive=<span class="number">60s</span>;  <span class="comment"># 将为打开文件制定缓存。max指定缓存数量，建议和打开文件数一致，inactive是指经过多长时间文件没被请求后删除缓存</span></span><br><span class="line">    <span class="attribute">open_file_cache_valid</span>    <span class="number">30s</span>;  <span class="comment"># 多长时间检查一次缓存的有效信息</span></span><br><span class="line">    <span class="attribute">open_file_cache_min_uses</span>   <span class="number">1</span>;  <span class="comment"># 指上面inactive参数时间内文件的最少使用次数，如果超过这个数字，文件描叙符一直在缓存中打开的，如果没再inactive时间内一次没被使用，它将被移除</span></span><br><span class="line">    <span class="attribute">client_header_buffer_size</span> <span class="number">4k</span>;  <span class="comment"># 客户端请求头部的缓冲区大小</span></span><br><span class="line">    <span class="attribute">client_header_timeout</span> <span class="number">15</span>;      <span class="comment"># 设置请求头的超时时间</span></span><br><span class="line">    <span class="attribute">client_body_timeout</span>   <span class="number">15</span>;      <span class="comment"># 设置请求体的超时时间</span></span><br><span class="line">    <span class="attribute">client_max_body_size</span> <span class="number">10m</span>;      <span class="comment"># 上传文件大小限制</span></span><br><span class="line">    <span class="attribute">client_body_buffer_size</span> <span class="number">256k</span>;  <span class="comment"># 缓冲区代理缓冲用户端请求的最大字节数</span></span><br><span class="line">    <span class="attribute">reset_timedout_connection</span> <span class="literal">on</span>;  <span class="comment"># 告诉nginx关闭不响应的客户端连接。这将会释放那个客户端所占有的内存空间</span></span><br><span class="line">    <span class="attribute">send_timeout</span>   <span class="number">15</span>;             <span class="comment"># 响应客户端超时时间</span></span><br><span class="line">    <span class="attribute">server_tokens</span> <span class="literal">off</span>;             <span class="comment"># 隐藏版本号</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># gzip压缩</span></span><br><span class="line">    <span class="attribute">gzip</span> <span class="literal">on</span>;                <span class="comment"># 开启压缩</span></span><br><span class="line">    <span class="attribute">gzip_min_length</span>    <span class="number">2k</span>;  <span class="comment"># 用于设置允许压缩的页面最小字节数</span></span><br><span class="line">    <span class="attribute">gzip_buffers</span>    <span class="number">4</span> <span class="number">16k</span>;  <span class="comment"># 设置用于处理请求压缩的缓冲区数量和大小</span></span><br><span class="line">    <span class="attribute">gzip_http_version</span> <span class="number">1</span>.<span class="number">1</span>;  <span class="comment"># 压缩版本</span></span><br><span class="line">    <span class="attribute">gzip_comp_level</span> <span class="number">6</span>;      <span class="comment"># 压缩等级</span></span><br><span class="line">    <span class="attribute">gzip_types</span> text/plain text/css text/javascriptapplication/json application/javascript application/x-javascriptapplication/xml;  <span class="comment"># 压缩类型</span></span><br><span class="line">    <span class="attribute">gzip_vary</span> <span class="literal">on</span>;           <span class="comment"># 和http头有关系，加个vary头，给代理服务器用的，有的浏览器支持压缩，有的不支持，所以避免浪费不支持的也压缩，所以根据客户端的HTTP头来判断，是否需要压缩</span></span><br><span class="line">    <span class="attribute">gzip_proxied</span> any;       <span class="comment"># 无条件压缩所有结果数据</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># fastcgi调优</span></span><br><span class="line">    <span class="attribute">fastcgi_connect_timeout</span> <span class="number">300</span>;       <span class="comment"># 指连接到后端FastCGL的超时时间</span></span><br><span class="line">    <span class="attribute">fastcgi_send_timeout</span> <span class="number">300</span>;          <span class="comment"># 指向FastCGL传送请求的超时时间</span></span><br><span class="line">    <span class="attribute">fastcgi_read_timeout</span> <span class="number">300</span>;          <span class="comment"># 指接收FastCGL答应的超时时间</span></span><br><span class="line">    <span class="attribute">fastcgi_buffer_size</span>  <span class="number">64k</span>;          <span class="comment"># 指定读取FastCGL答应第一部分需要多大缓冲区，该值表示使用1个64kb的缓冲区读取应答第一部分(应答头)</span></span><br><span class="line">    <span class="attribute">fastcgi_buffers</span>    <span class="number">4</span> <span class="number">64k</span>;          <span class="comment"># 指定本地需要多少和多大的缓冲区来缓冲fastcgi应答请求</span></span><br><span class="line">    <span class="attribute">fastcgi_busy_buffers_size</span> <span class="number">128k</span>;    <span class="comment"># 用于设置系统很忙时可以使用的proxy_buffers大小，默认值是fastcgi_buffer的2倍</span></span><br><span class="line">    <span class="attribute">fastcgi_temp_file_write_size</span> <span class="number">128k</span>; <span class="comment"># 写入缓存文件使用多大的数据块，默认值是fastcgi_buffer的2倍</span></span><br><span class="line">    <span class="attribute">fastcgi_temp_path</span> /application/nginx/fastcgi_temp;   <span class="comment"># FastCGI 临时文件的存放路径</span></span><br><span class="line">    <span class="attribute">fastcgi_intercept_errors</span> <span class="literal">on</span>;</span><br><span class="line">    <span class="attribute">fastcgi_cache_key</span> <span class="string">&quot;<span class="variable">$request_method</span>://<span class="variable">$host</span><span class="variable">$request_uri</span>&quot;</span>;</span><br><span class="line">    <span class="attribute">fastcgi_cache_path</span> /application/nginx/fastcgi_cache levels=<span class="number">1</span>:<span class="number">2</span> keys_zone=cache_fastcgi:<span class="number">128m</span> inactive=<span class="number">1d</span> max_size=<span class="number">1g</span>;    <span class="comment"># 这个指令为FastCGI缓存指定一个路径，目录结构等级，关键字区域存储时间和非活动删除时间、以及最大占用空间</span></span><br><span class="line">    <span class="attribute">fastcgi_cache</span> cache_fastcgi;    <span class="comment"># fastcgi_cache指令引用我们在fastcgicache_path指令中指定的内存区域名称，并将缓存存储在此区域中</span></span><br><span class="line">    <span class="attribute">fastcgi_cache_valid</span> <span class="number">200</span> <span class="number">302</span> <span class="number">1h</span>; <span class="comment"># 表示将200和302应答缓存一个小时</span></span><br><span class="line">    <span class="attribute">fastcgi_cache_valid</span> <span class="number">301</span> <span class="number">1d</span>;     <span class="comment"># 表示将301应答缓存1天</span></span><br><span class="line">    <span class="attribute">fastcgi_cache_valid</span> any <span class="number">1m</span>;     <span class="comment"># 表示其他应答均缓存1分钟</span></span><br><span class="line">    <span class="attribute">fastcgi_cache_min_uses</span> <span class="number">1</span>;       <span class="comment"># 表示经过多少次请求的相同URL将被缓存</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 日志配置</span></span><br><span class="line">    <span class="attribute">log_format</span>  main  <span class="string">&#x27;<span class="variable">$remote_addr</span> ? <span class="variable">$remote_user</span> [<span class="variable">$time_local</span>] &quot;<span class="variable">$request</span>&quot;&#x27;</span></span><br><span class="line">                      <span class="string">&#x27;<span class="variable">$status</span> <span class="variable">$body_bytes_sent</span> &quot;<span class="variable">$http_referer</span>&quot;&#x27;</span></span><br><span class="line">                     <span class="string">&#x27;&quot;<span class="variable">$http_user_agent</span>&quot; &quot;<span class="variable">$http_x_forwarded_for</span>&quot;&#x27;</span>;</span><br><span class="line">      <span class="attribute">access_log</span>  /application/nginx/logs/access.log  main;</span><br><span class="line">      <span class="attribute">error_log</span>   /application/nginx/logs/<span class="literal">error</span>.log     <span class="literal">info</span>;</span><br><span class="line">      <span class="attribute">include</span> /application/nginx/conf/conf.d/<span class="regexp">*.conf</span>;</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+
+<p>为网站开启 Nginx 缓存清理</p>
+<p>编译purge模块</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget http://labs.frickle.com/files/ngx_cache_purge-2.3.tar.gz</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">tar xf ngx_cache_purge-2.3.tar.gz -C /opt/</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"> <span class="built_in">cd</span> nginx-1.15.2/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">nginx -V</span></span><br><span class="line">nginx version: nginx/1.15.2</span><br><span class="line">built by gcc 4.8.5 20150623 (Red Hat 4.8.5-28) (GCC)</span><br><span class="line">built with OpenSSL 1.0.2k-fips  26 Jan 2017</span><br><span class="line">TLS SNI support enabled</span><br><span class="line">configure arguments: --prefix=/application/nginx --user=www --group=www --with-http_stub_status_module --with-http_ssl_module</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"> ./configure --prefix=/application/nginx --user=www --group=www --with-http_stub_status_module --with-http_ssl_module  --add-module=/opt/ngx_cache_purge-2.3</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">make</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cd</span> objs/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">mv</span> /application/nginx/sbin/nginx /application/nginx/sbin/nginx.bak</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash"><span class="built_in">cp</span> nginx /application/nginx/sbin/</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ll /application/nginx/sbin/</span></span><br><span class="line">total 11576</span><br><span class="line">-rwxr-xr-x 1 root root 5960496 Oct 30 14:21 nginx</span><br><span class="line">-rwxr-xr-x 1 www  www  5889784 Nov 22  2018 nginx.bak</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">nginx -s stop;nginx</span></span><br></pre></td></tr></table></figure>
+
+<p>proxy_cache与fastcgi_cache区别</p>
+<p>proxy_cache的作用是缓存后端服务器的内容，包括静态的和动态。</p>
+<p>fastcgi_cache用是缓存fastcgi生成的内容，很多情况是php生成的动态的内容。</p>
+<p>proxy_cache缓存减少了nginx与后端通信的次数，节省了传输时间和后端宽带。</p>
+<p>fastcgi_cache缓存减少了nginx与php的通信的次数，更减轻了php和数据库(mysql)的压力，这比用memcached之类的缓存要轻松得多。 </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2019/09/23/nginx%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96/">https://wqblogs.com/2019/09/23/nginx%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com:4443/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/09/23/%E5%AE%89%E8%A3%85harbor/" title="安装harbor"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">安装harbor</div></div></a></div><div class="next-post pull-right"><a href="/2019/09/23/kubernetes%E5%AE%89%E8%A3%85dashboard/" title="kubernetes安装dashboard"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">kubernetes安装dashboard</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群"><img src="https://www.wqblogs.com:4443/image/Kubernetes.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04 lts 部署k8s集群"/></a><div class="content"><a class="title" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群">ubuntu20.04 lts 部署k8s集群</a><time datetime="2022-12-30T13:11:59.000Z" title="發表於 2022-12-30 21:11:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜"><img src="https://www.wqblogs.com:4443/image/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="multipss尝鲜"/></a><div class="content"><a class="title" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜">multipss尝鲜</a><time datetime="2022-12-30T08:00:59.000Z" title="發表於 2022-12-30 16:00:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故"><img src="https://www.wqblogs.com:4443/image/postgresql.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="postgresql生产事故"/></a><div class="content"><a class="title" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故">postgresql生产事故</a><time datetime="2022-11-27T13:16:49.000Z" title="發表於 2022-11-27 21:16:49">2022-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GO语言变量及常量"/></a><div class="content"><a class="title" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量">GO语言变量及常量</a><time datetime="2022-11-24T11:45:00.000Z" title="發表於 2022-11-24 19:45:00">2022-11-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何编写golang代码"/></a><div class="content"><a class="title" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码">如何编写golang代码</a><time datetime="2022-11-23T15:19:00.000Z" title="發表於 2022-11-23 23:19:00">2022-11-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Kubernetes集群的污点与容忍 | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Taint 和 Toleration节点亲和性，是pod的一种属性（偏好或硬性要求），它使pod被吸引到一类特定的节点。Taint 则相反，它使节点能够排斥一类特定的 pod Taint 和 toleration 相互配合，可以用来避免 pod 被分配到不合适的节点上。每个节点上都可以应用一个或多个taint ，这表示对于那些不能容忍这些 taint 的 pod，是不会被该节点接受的。如果将 to">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes集群的污点与容忍">
+<meta property="og:url" content="https://wqblogs.com/2019/11/04/Kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="Taint 和 Toleration节点亲和性，是pod的一种属性（偏好或硬性要求），它使pod被吸引到一类特定的节点。Taint 则相反，它使节点能够排斥一类特定的 pod Taint 和 toleration 相互配合，可以用来避免 pod 被分配到不合适的节点上。每个节点上都可以应用一个或多个taint ，这表示对于那些不能容忍这些 taint 的 pod，是不会被该节点接受的。如果将 to">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com:4443/image/default.png">
+<meta property="article:published_time" content="2019-11-04T03:48:24.000Z">
+<meta property="article:modified_time" content="2023-06-24T15:59:29.000Z">
+<meta property="article:author" content="chongzi">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com:4443/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2019/11/04/Kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kubernetes集群的污点与容忍',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-24 23:59:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com:4443/image/default.png')"><nav id="nav"><span id="blog-info"><a href="/" title="虫子个人博客"><span class="site-name">虫子个人博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Kubernetes集群的污点与容忍</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2019-11-04T03:48:24.000Z" title="發表於 2019-11-04 11:48:24">2019-11-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-06-24T15:59:29.000Z" title="更新於 2023-06-24 23:59:29">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Kubernetes/">Kubernetes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Kubernetes集群的污点与容忍"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="Taint-和-Toleration"><a href="#Taint-和-Toleration" class="headerlink" title="Taint 和 Toleration"></a>Taint 和 Toleration</h2><p>节点亲和性，是pod的一种属性（偏好或硬性要求），它使pod被吸引到一类特定的节点。Taint 则相反，它使节点能够排斥一类特定的 pod</p>
+<p>Taint 和 toleration 相互配合，可以用来避免 pod 被分配到不合适的节点上。每个节点上都可以应用一个或多个taint ，这表示对于那些不能容忍这些 taint 的 pod，是不会被该节点接受的。如果将 toleration 应用于 pod上，则表示这些 pod 可以（但不要求）被调度到具有匹配 taint 的节点上</p>
+ <span id="more"></span>
+
+<h3 id="污点-Taint"><a href="#污点-Taint" class="headerlink" title="污点(Taint)"></a>污点(Taint)</h3><p>污点 ( Taint ) 的组成</p>
+<p>使用kubectl taint命令可以给某个 Node 节点设置污点，Node 被设置上污点之后就和 Pod 之间存在了一种相斥的关系，可以让 Node 拒绝 Pod 的调度执行，甚至将 Node 已经存在的 Pod 驱逐出去</p>
+<p>每个污点的组成如下：</p>
+<p>key&#x3D;value:effect</p>
+<p>每个污点有一个 key 和 value 作为污点的标签，其中 value 可以为空，effect 描述污点的作用。</p>
+<p>当前 tainteffect 支持如下三个选项：</p>
+<ul>
+<li><p>NoSchedule：表示 k8s 将不会将 Pod 调度到具有该污点的 Node 上</p>
+</li>
+<li><p>PreferNoSchedule：表示 k8s 将尽量避免将 Pod 调度到具有该污点的 Node 上</p>
+</li>
+<li><p>NoExecute：表示 k8s 将不会将 Pod 调度到具有该污点的 Node 上，同时会将 Node 上已经存在的 Pod 驱逐出去</p>
+</li>
+</ul>
+<h3 id="污点的设置、查看和去除"><a href="#污点的设置、查看和去除" class="headerlink" title="污点的设置、查看和去除"></a>污点的设置、查看和去除</h3><p># 设置污点</p>
+<p>kubectl taint nodes node1 key1&#x3D;value1:NoSchedule</p>
+<p># 节点说明中，查找 Taints 字段</p>
+<p>kubectl describe node node-name</p>
+<p># 去除污点</p>
+<p>kubectl taint nodes node1 key1:NoSchedule-</p>
+<h4 id="设置污点"><a href="#设置污点" class="headerlink" title="设置污点"></a>设置污点</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl taint nodes node01 check=node01:NoExecute</span>      </span><br><span class="line">node/node01 tainted</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl taint nodes node02 check=node02:NoExecute</span></span><br><span class="line">node/node02 tainted</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="查看node节点Taints字段"><a href="#查看node节点Taints字段" class="headerlink" title="查看node节点Taints字段"></a>查看node节点Taints字段</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl get node</span></span><br><span class="line">NAME     STATUS   ROLES    AGE   VERSION</span><br><span class="line">matser   Ready    master   16d   v1.15.1</span><br><span class="line">node01   Ready    node     16d   v1.15.1</span><br><span class="line">node02   Ready    node     16d   v1.15.1</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl describe node matser|grep Taint       <span class="comment"># master节点自带不调度污点</span></span></span><br><span class="line">Taints:             node-role.kubernetes.io/master:NoSchedule</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl describe node node01|grep Taints</span></span><br><span class="line">Taints:             check=node01:NoExecute</span><br></pre></td></tr></table></figure>
+
+
+<p>查看是否生效</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># vim nginx-deploy.yml</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:1.15</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line"><span class="comment"># kubectl apply -f  nginx-deploy.yml</span></span><br><span class="line"><span class="string">deployment.extensions/nginx-deployment</span> <span class="string">created</span></span><br><span class="line"><span class="comment"># kubectl get pod</span></span><br><span class="line"><span class="string">NAME</span>                                <span class="string">READY</span>   <span class="string">STATUS</span>    <span class="string">RESTARTS</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">nginx-deployment-6f6d9b887f-9dddq</span>   <span class="number">0</span><span class="string">/1</span>     <span class="string">Pending</span>   <span class="number">0</span>          <span class="string">91s</span></span><br><span class="line"><span class="string">nginx-deployment-6f6d9b887f-f2hhk</span>   <span class="number">0</span><span class="string">/1</span>     <span class="string">Pending</span>   <span class="number">0</span>          <span class="string">91s</span></span><br><span class="line"><span class="string">nginx-deployment-6f6d9b887f-v7w54</span>   <span class="number">0</span><span class="string">/1</span>     <span class="string">Pending</span>   <span class="number">0</span>          <span class="string">91s</span></span><br><span class="line"><span class="comment"># kubectl describe pod nginx-deployment-6f6d9b887f-9dddq</span></span><br><span class="line"><span class="attr">Events:</span></span><br><span class="line">  <span class="string">Type</span>     <span class="string">Reason</span>            <span class="string">Age</span>               <span class="string">From</span>               <span class="string">Message</span></span><br><span class="line">  <span class="string">----</span>     <span class="string">------</span>            <span class="string">----</span>              <span class="string">----</span>               <span class="string">-------</span></span><br><span class="line">  <span class="string">Warning</span>  <span class="string">FailedScheduling</span>  <span class="string">1s</span> <span class="string">(x3</span> <span class="string">over</span> <span class="string">69s)</span>  <span class="string">default-scheduler</span>  <span class="attr">0/3 nodes are available:</span> <span class="number">3</span> <span class="string">node(s)</span> <span class="string">had</span> <span class="string">taints</span> <span class="string">that</span> <span class="string">the</span> <span class="string">pod</span> <span class="string">didn&#x27;t</span> <span class="string">tolerate.</span></span><br></pre></td></tr></table></figure>
+
+
+<h3 id="容忍"><a href="#容忍" class="headerlink" title="容忍"></a>容忍</h3><p>设置了污点的 Node 将根据 taint 的 effect：NoSchedule、PreferNoSchedule、NoExecute 和 Pod 之间产生互斥的关系，Pod 将在一定程度上不会被调度到 Node 上。但我们可以在 Pod 上设置容忍 ( Toleration ) ，意思是设置了容忍的 Pod 将可以容忍污点的存在，可以被调度到存在污点的 Node 上</p>
+<ul>
+<li><p>其中 key, vaule, effect 要与 Node 上设置的 taint 保持一致</p>
+</li>
+<li><p>operator 的值为 Exists 将会忽略 value 值</p>
+</li>
+<li><p>tolerationSeconds 用于描述当 Pod 需要被驱逐时可以在 Pod 上继续保留运行的时间</p>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># vim nginx-deploy.yml</span></span><br><span class="line"><span class="attr">kind:</span> <span class="string">Deployment</span></span><br><span class="line"><span class="attr">metadata:</span></span><br><span class="line">  <span class="attr">name:</span> <span class="string">nginx-deployment</span></span><br><span class="line"><span class="attr">spec:</span></span><br><span class="line">  <span class="attr">replicas:</span> <span class="number">3</span></span><br><span class="line">  <span class="attr">template:</span></span><br><span class="line">    <span class="attr">metadata:</span></span><br><span class="line">      <span class="attr">labels:</span></span><br><span class="line">        <span class="attr">app:</span> <span class="string">nginx</span></span><br><span class="line">    <span class="attr">spec:</span></span><br><span class="line">      <span class="attr">containers:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">nginx</span></span><br><span class="line">        <span class="attr">image:</span> <span class="string">nginx:1.15</span></span><br><span class="line">        <span class="attr">ports:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">containerPort:</span> <span class="number">80</span></span><br><span class="line">      <span class="attr">tolerations:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;check&quot;</span></span><br><span class="line">        <span class="attr">operator:</span> <span class="string">&quot;Equal&quot;</span></span><br><span class="line">        <span class="attr">value:</span> <span class="string">&quot;node01&quot;</span></span><br><span class="line">        <span class="attr">effect:</span> <span class="string">&quot;NoExecute&quot;</span></span><br><span class="line">        <span class="attr">tolerationSeconds:</span> <span class="number">3600</span></span><br><span class="line"><span class="comment"># kubectl apply -f nginx-deploy.yml</span></span><br><span class="line"><span class="string">deployment.extensions/nginx-deployment</span> <span class="string">configured</span></span><br><span class="line">[<span class="string">root@matser</span> <span class="string">nginx</span>]<span class="comment"># kubectl get pod</span></span><br><span class="line"><span class="string">NAME</span>                                <span class="string">READY</span>   <span class="string">STATUS</span>              <span class="string">RESTARTS</span>   <span class="string">AGE</span></span><br><span class="line"><span class="string">nginx-deployment-77f8d88b85-9vzzb</span>   <span class="number">0</span><span class="string">/1</span>     <span class="string">ContainerCreating</span>   <span class="number">0</span>          <span class="string">1s</span></span><br><span class="line"><span class="string">nginx-deployment-77f8d88b85-d5kd8</span>   <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>             <span class="number">0</span>          <span class="string">3s</span></span><br><span class="line"><span class="string">nginx-deployment-77f8d88b85-jgjst</span>   <span class="number">1</span><span class="string">/1</span>     <span class="string">Running</span>             <span class="number">0</span>          <span class="string">3s</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>当不指定 key 值时，表示容忍所有的污点 key</p>
+  <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">tolerations:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">operator:</span> <span class="string">&quot;Exists&quot;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>当不指定 effect 值时，表示容忍所有的污点作用</p>
+  <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">tolerations:</span></span><br><span class="line"><span class="bullet">-</span> <span class="attr">key:</span> <span class="string">&quot;key&quot;</span></span><br><span class="line"> <span class="attr">operator:</span> <span class="string">&quot;Exists&quot;</span></span><br></pre></td></tr></table></figure>
+
+</li>
+<li><p>有多个 Master 存在时，防止资源浪费，可以如下设置</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">kubectl taint nodes Node-Name node-role.kubernetes.io/master=:PreferNoSchedule</span><br></pre></td></tr></table></figure></li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2019/11/04/Kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/">https://wqblogs.com/2019/11/04/Kubernetes%E9%9B%86%E7%BE%A4%E7%9A%84%E6%B1%A1%E7%82%B9%E4%B8%8E%E5%AE%B9%E5%BF%8D/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com:4443/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/11/04/Kubernetes%E5%AE%89%E5%85%A8%E4%B9%8Bkubeconfig%E8%AE%BF%E9%97%AE%E6%8E%A7%E5%88%B6/" title="Kubernetes安全之kubeconfig访问控制"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Kubernetes安全之kubeconfig访问控制</div></div></a></div><div class="next-post pull-right"><a href="/2019/11/01/Kubernetes%E7%9A%84PV%E3%80%81PVC%E4%BD%BF%E7%94%A8/" title="Kubernetes的PV、PVC使用"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Kubernetes的PV、PVC使用</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Taint-%E5%92%8C-Toleration"><span class="toc-number">1.</span> <span class="toc-text">Taint 和 Toleration</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%A1%E7%82%B9-Taint"><span class="toc-number">1.1.</span> <span class="toc-text">污点(Taint)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B1%A1%E7%82%B9%E7%9A%84%E8%AE%BE%E7%BD%AE%E3%80%81%E6%9F%A5%E7%9C%8B%E5%92%8C%E5%8E%BB%E9%99%A4"><span class="toc-number">1.2.</span> <span class="toc-text">污点的设置、查看和去除</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E6%B1%A1%E7%82%B9"><span class="toc-number">1.2.1.</span> <span class="toc-text">设置污点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8Bnode%E8%8A%82%E7%82%B9Taints%E5%AD%97%E6%AE%B5"><span class="toc-number">1.2.2.</span> <span class="toc-text">查看node节点Taints字段</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%B9%E5%BF%8D"><span class="toc-number">1.3.</span> <span class="toc-text">容忍</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群"><img src="https://www.wqblogs.com:4443/image/Kubernetes.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04 lts 部署k8s集群"/></a><div class="content"><a class="title" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群">ubuntu20.04 lts 部署k8s集群</a><time datetime="2022-12-30T13:11:59.000Z" title="發表於 2022-12-30 21:11:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜"><img src="https://www.wqblogs.com:4443/image/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="multipss尝鲜"/></a><div class="content"><a class="title" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜">multipss尝鲜</a><time datetime="2022-12-30T08:00:59.000Z" title="發表於 2022-12-30 16:00:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故"><img src="https://www.wqblogs.com:4443/image/postgresql.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="postgresql生产事故"/></a><div class="content"><a class="title" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故">postgresql生产事故</a><time datetime="2022-11-27T13:16:49.000Z" title="發表於 2022-11-27 21:16:49">2022-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GO语言变量及常量"/></a><div class="content"><a class="title" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量">GO语言变量及常量</a><time datetime="2022-11-24T11:45:00.000Z" title="發表於 2022-11-24 19:45:00">2022-11-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何编写golang代码"/></a><div class="content"><a class="title" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码">如何编写golang代码</a><time datetime="2022-11-23T15:19:00.000Z" title="發表於 2022-11-23 23:19:00">2022-11-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

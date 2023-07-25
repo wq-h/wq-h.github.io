@@ -1,0 +1,312 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>apollo初探 | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="apollo简介Apollo（阿波罗）是携程框架部门研发的开源配置管理中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性。 配置基本概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="apollo初探">
+<meta property="og:url" content="https://wqblogs.com/2019/03/13/apollo%E5%88%9D%E6%8E%A2/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="apollo简介Apollo（阿波罗）是携程框架部门研发的开源配置管理中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性。 配置基本概念">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com:4443/image/default.png">
+<meta property="article:published_time" content="2019-03-13T09:32:33.000Z">
+<meta property="article:modified_time" content="2023-06-24T15:59:29.000Z">
+<meta property="article:author" content="chongzi">
+<meta property="article:tag" content="apollo">
+<meta property="article:tag" content="配置中心">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com:4443/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2019/03/13/apollo%E5%88%9D%E6%8E%A2/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'apollo初探',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-24 23:59:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com:4443/image/default.png')"><nav id="nav"><span id="blog-info"><a href="/" title="虫子个人博客"><span class="site-name">虫子个人博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">apollo初探</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2019-03-13T09:32:33.000Z" title="發表於 2019-03-13 17:32:33">2019-03-13</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-06-24T15:59:29.000Z" title="更新於 2023-06-24 23:59:29">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/apollo/">apollo</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="apollo初探"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h2 id="apollo简介"><a href="#apollo简介" class="headerlink" title="apollo简介"></a><strong>apollo简介</strong></h2><p>Apollo（阿波罗）是携程框架部门研发的开源配置管理中心，能够集中化管理应用不同环境、不同集群的配置，配置修改后能够实时推送到应用端，并且具备规范的权限、流程治理等特性。</p>
+<h3 id="配置基本概念"><a href="#配置基本概念" class="headerlink" title="配置基本概念"></a>配置基本概念</h3> <span id="more"></span>
+<ul>
+<li><p> 配置是独立于程序的只读变量</p>
+<pre><code>* 配置首先是独立于程序的，同一份程序在不同的配置下会有不同的行为。
+
+* 其次，配置对于程序是只读的，程序通过读取配置来改变自己的行为，但是程序不应该去改变配置。
+
+* 常见的配置有：DB Connection Str、Thread Pool Size、Buffer Size、Request Timeout、Feature Switch、Server Urls等。
+</code></pre>
+</li>
+<li><p>配置伴随应用的整个生命周期</p>
+<ul>
+<li>配置贯穿于应用的整个生命周期，应用在启动时通过读取配置来初始化，在运行时根据配置调整行为。</li>
+</ul>
+</li>
+<li><p>配置可以有多种加载方式</p>
+<ul>
+<li>配置也有很多种加载方式，常见的有程序内部hard code，配置文件，环境变量，启动参数，基于数据库等</li>
+</ul>
+</li>
+<li><p>配置需要治理</p>
+<p>   权限控制</p>
+</li>
+</ul>
+<p>       * 由于配置能改变程序的行为，不正确的配置甚至能引起灾难，所以对配置的修改必须有比较完善的权限控制</p>
+<p>       不同环境、集群配置管理</p>
+<p>       * 同一份程序在不同的环境（开发，测试，生产）、不同的集群（如不同的数据中心）经常需要有不同的配置，所以需要有完善的环境、集群配置管理</p>
+<p>       框架类组件配置管理</p>
+<p>       * 还有一类比较特殊的配置 - 框架类组件配置，比如CAT客户端的配置。</p>
+<p>       * 虽然这类框架类组件是由其他团队开发、维护，但是运行时是在业务实际应用内的，所以本质上可以认为框架类组件也是应用的一部分。</p>
+<p>       * 这类组件对应的配置也需要有比较完善的管理方式。</p>
+<h3 id="apollo特性"><a href="#apollo特性" class="headerlink" title="apollo特性"></a><strong>apollo特性</strong></h3><ul>
+<li><p>统一管理不同环境、不同集群的配置</p>
+<ul>
+<li>Apollo提供了一个统一界面集中式管理不同环境（environment）、不同集群（cluster）、不同命名空间（namespace）的配置。</li>
+</ul>
+</li>
+</ul>
+<p>       * 同一份代码部署在不同的集群，可以有不同的配置，比如zookeeper的地址等</p>
+<p>       * 通过命名空间（namespace）可以很方便地支持多个不同应用共享同一份配置，同时还允许应用对共享的配置进行覆盖</p>
+<ul>
+<li><p>配置修改实时生效（热发布）</p>
+<ul>
+<li>用户在Apollo修改完配置并发布后，客户端能实时（1秒）接收到最新的配置，并通知到应用程序</li>
+</ul>
+</li>
+<li><p>版本发布管理</p>
+<ul>
+<li>所有的配置发布都有版本概念，从而可以方便地支持配置的回滚</li>
+</ul>
+</li>
+<li><p>灰度发布</p>
+<ul>
+<li>支持配置的灰度发布，比如点了发布后，只对部分应用实例生效，等观察一段时间没问题后再推给所有应用实例</li>
+</ul>
+</li>
+<li><p>权限管理、发布审核、操作审计</p>
+<ul>
+<li>应用和配置的管理都有完善的权限管理机制，对配置的管理还分为了编辑和发布两个环节，从而减少人为的错误。</li>
+</ul>
+</li>
+</ul>
+<p>       * 所有的操作都有审计日志，可以方便地追踪问题</p>
+<ul>
+<li><p>客户端配置信息监控</p>
+<ul>
+<li>可以在界面上方便地看到配置在被哪些实例使用</li>
+</ul>
+</li>
+<li><p>提供Java和.Net原生客户端</p>
+<ul>
+<li>提供了Java和.Net的原生客户端，方便应用集成</li>
+</ul>
+</li>
+</ul>
+<p>       * 支持Spring Placeholder, Annotation和Spring Boot的ConfigurationProperties，方便应用使用（需要Spring 3.1.1+）</p>
+<p>       * 同时提供了Http接口，非Java和.Net应用也可以方便地使用</p>
+<ul>
+<li><p>提供开放平台API</p>
+<ul>
+<li>Apollo自身提供了比较完善的统一配置管理界面，支持多环境、多数据中心配置管理、权限、流程治理等特性。不过Apollo出于通用性考虑，不会对配置的修改做过多限制，只要符合基本的格式就能保存，不会针对不同的配置值进行针对性的校验，如数据库用户名、密码，Redis服务地址等</li>
+</ul>
+</li>
+</ul>
+<p>       * 对于这类应用配置，Apollo支持应用方通过开放平台API在Apollo进行配置的修改和发布，并且具备完善的授权和权限控制</p>
+<ul>
+<li><p>部署简单</p>
+<ul>
+<li>配置中心作为基础服务，可用性要求非常高，这就要求Apollo对外部依赖尽可能地少</li>
+</ul>
+</li>
+</ul>
+<p>       * 目前唯一的外部依赖是MySQL，所以部署非常简单，只要安装好Java和MySQL就可以让Apollo跑起来</p>
+<p>       * Apollo还提供了打包脚本，一键就可以生成所有需要的安装包，并且支持自定义运行时参数</p>
+<h3 id="Apollo中的几个核心概念"><a href="#Apollo中的几个核心概念" class="headerlink" title="Apollo中的几个核心概念"></a>Apollo中的几个核心概念</h3><p>application (应用)</p>
+<p>这个很好理解，就是实际使用配置的应用，Apollo客户端在运行时需要知道当前应用是谁，从而可以去获取对应的配置</p>
+<p>每个应用都需要有唯一的身份标识 - appId，我们认为应用身份是跟着代码走的，所以需要在代码中配置，具体信息请参见<a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo/wiki/Java%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97">Java客户端使用指南</a>。</p>
+<p>environment (环境)</p>
+<p>配置对应的环境，Apollo客户端在运行时需要知道当前应用处于哪个环境，从而可以去获取应用的配置</p>
+<p>我们认为环境和代码无关，同一份代码部署在不同的环境就应该能够获取到不同环境的配置</p>
+<p>所以环境默认是通过读取机器上的配置（server.properties中的env属性）指定的，不过为了开发方便，我们也支持运行时通过System Property等指定，具体信息请参见<a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo/wiki/Java%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97">Java客户端使用指南</a>。</p>
+<p>cluster (集群)</p>
+<p>一个应用下不同实例的分组，比如典型的可以按照数据中心分，把上海机房的应用实例分为一个集群，把北京机房的应用实例分为另一个集群。</p>
+<p>对不同的cluster，同一个配置可以有不一样的值，如zookeeper地址。</p>
+<p>集群默认是通过读取机器上的配置（server.properties中的idc属性）指定的，不过也支持运行时通过System Property指定，具体信息请参见<a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo/wiki/Java%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97">Java客户端使用指南</a>。</p>
+<p>namespace (命名空间)</p>
+<p>一个应用下不同配置的分组，可以简单地把namespace类比为文件，不同类型的配置存放在不同的文件中，如数据库配置文件，rpc配置文件，应用自身的配置文件等</p>
+<p>应用可以直接读取到公共组件的配置namespace，如DAL，RPC等</p>
+<p>应用也可以通过继承公共组件的配置namespace来对公共组件的配置做调整，如DAL的初始数据库连接数</p>
+<h3 id="apollo总体设计"><a href="#apollo总体设计" class="headerlink" title="apollo总体设计"></a><strong>apollo总体设计</strong></h3><p><img src="/image/15524692151.png"></p>
+<p>上图简要描述了Apollo的总体设计，我们可以从下往上看</p>
+<p>  Config Service提供配置的读取、推送等功能，服务对象是Apollo客户端</p>
+<p>  Admin Service提供配置的修改、发布等功能，服务对象是Apollo Portal（管理界面）</p>
+<p>  Config Service和Admin Service都是多实例、无状态部署，所以需要将自己注册到Eureka中并保持心跳</p>
+<p>  在Eureka之上我们架了一层Meta Server用于封装Eureka的服务发现接口</p>
+<p>  Client通过域名访问Meta Server获取Config Service服务列表（IP+Port），而后直接通过IP+Port访问服务，同时在Client侧会做load balance、错误重试</p>
+<p>  Portal通过域名访问Meta Server获取Admin Service服务列表（IP+Port），而后直接通过IP+Port访问服务，同时在Portal侧会做load balance、错误重试</p>
+<p>  为了简化部署，我们实际上会把Config Service、Eureka和Meta Server三个逻辑角色部署在同一个JVM进程中</p>
+<h3 id="客户端设计"><a href="#客户端设计" class="headerlink" title="客户端设计"></a><strong>客户端设计</strong></h3><p><img src="/image/1552469391-Image.png"></p>
+<p>上图简要描述了Apollo客户端的实现原理：</p>
+<ol>
+<li><p>客户端和服务端保持了一个长连接，从而能第一时间获得配置更新的推送。</p>
+</li>
+<li><p>客户端还会定时从Apollo配置中心服务端拉取应用的最新配置。</p>
+<ul>
+<li><p>这是一个fallback机制，为了防止推送机制失效导致配置不更新</p>
+</li>
+<li><p>客户端定时拉取会上报本地版本，所以一般情况下，对于定时拉取的操作，服务端都会返回304 - Not Modified</p>
+</li>
+<li><p>定时频率默认为每5分钟拉取一次，客户端也可以通过在运行时指定System Property: apollo.refreshInterval来覆盖，单位为分钟。</p>
+</li>
+</ul>
+</li>
+<li><p>客户端从Apollo配置中心服务端获取到应用的最新配置后，会保存在内存中</p>
+</li>
+<li><p>客户端会把从服务端获取到的配置在本地文件系统缓存一份</p>
+<ul>
+<li>在遇到服务不可用，或网络不通的时候，依然能从本地恢复配置</li>
+</ul>
+</li>
+<li><p>应用程序从Apollo客户端获取最新的配置、订阅配置更新通知</p>
+</li>
+</ol>
+<p><a target="_blank" rel="noopener" href="https://github.com/ctripcorp/apollo/wiki/Apollo%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E4%BB%8B%E7%BB%8D">官方文档</a> </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2019/03/13/apollo%E5%88%9D%E6%8E%A2/">https://wqblogs.com/2019/03/13/apollo%E5%88%9D%E6%8E%A2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/apollo/">apollo</a><a class="post-meta__tags" href="/tags/%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/">配置中心</a></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com:4443/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/03/15/smb%E6%9C%8D%E5%8A%A1%E9%83%A8%E7%BD%B2/" title="smb服务部署"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">smb服务部署</div></div></a></div><div class="next-post pull-right"><a href="/2019/02/28/%E5%88%B6%E4%BD%9Cswap%E4%BA%A4%E6%8D%A2%E7%A9%BA%E9%97%B4/" title="制作swap交换空间"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">制作swap交换空间</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/2019/03/15/apollo%E9%83%A8%E7%BD%B2%E5%AE%89%E8%A3%85/" title="apollo部署安装"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-03-15</div><div class="title">apollo部署安装</div></div></a></div><div><a href="/2019/01/24/spring%20club%E5%9F%BA%E4%BA%8Egit2consul%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83/" title="spring club基于git2consul配置中心"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-01-24</div><div class="title">spring club基于git2consul配置中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#apollo%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">apollo简介</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%85%8D%E7%BD%AE%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">1.1.</span> <span class="toc-text">配置基本概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#apollo%E7%89%B9%E6%80%A7"><span class="toc-number">1.2.</span> <span class="toc-text">apollo特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Apollo%E4%B8%AD%E7%9A%84%E5%87%A0%E4%B8%AA%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="toc-number">1.3.</span> <span class="toc-text">Apollo中的几个核心概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#apollo%E6%80%BB%E4%BD%93%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.4.</span> <span class="toc-text">apollo总体设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%AE%BE%E8%AE%A1"><span class="toc-number">1.5.</span> <span class="toc-text">客户端设计</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群"><img src="https://www.wqblogs.com:4443/image/Kubernetes.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04 lts 部署k8s集群"/></a><div class="content"><a class="title" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群">ubuntu20.04 lts 部署k8s集群</a><time datetime="2022-12-30T13:11:59.000Z" title="發表於 2022-12-30 21:11:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜"><img src="https://www.wqblogs.com:4443/image/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="multipss尝鲜"/></a><div class="content"><a class="title" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜">multipss尝鲜</a><time datetime="2022-12-30T08:00:59.000Z" title="發表於 2022-12-30 16:00:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故"><img src="https://www.wqblogs.com:4443/image/postgresql.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="postgresql生产事故"/></a><div class="content"><a class="title" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故">postgresql生产事故</a><time datetime="2022-11-27T13:16:49.000Z" title="發表於 2022-11-27 21:16:49">2022-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GO语言变量及常量"/></a><div class="content"><a class="title" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量">GO语言变量及常量</a><time datetime="2022-11-24T11:45:00.000Z" title="發表於 2022-11-24 19:45:00">2022-11-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何编写golang代码"/></a><div class="content"><a class="title" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码">如何编写golang代码</a><time datetime="2022-11-23T15:19:00.000Z" title="發表於 2022-11-23 23:19:00">2022-11-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

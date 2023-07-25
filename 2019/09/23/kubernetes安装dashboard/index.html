@@ -1,0 +1,217 @@
+<!DOCTYPE html><html lang="zh-TW" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>kubernetes安装dashboard | 虫子个人博客</title><meta name="author" content="chongzi"><meta name="copyright" content="chongzi"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="导入镜像链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1FjMf0_GAVX8lyxNuPVNF2A 提取码：t1ei # docker load -i dashboard_1.10.1.atr.gz">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kubernetes安装dashboard">
+<meta property="og:url" content="https://wqblogs.com/2019/09/23/kubernetes%E5%AE%89%E8%A3%85dashboard/index.html">
+<meta property="og:site_name" content="虫子个人博客">
+<meta property="og:description" content="导入镜像链接：https:&#x2F;&#x2F;pan.baidu.com&#x2F;s&#x2F;1FjMf0_GAVX8lyxNuPVNF2A 提取码：t1ei # docker load -i dashboard_1.10.1.atr.gz">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:image" content="https://www.wqblogs.com:4443/image/default.png">
+<meta property="article:published_time" content="2019-09-23T07:54:22.000Z">
+<meta property="article:modified_time" content="2023-06-24T15:59:29.000Z">
+<meta property="article:author" content="chongzi">
+<meta property="article:tag" content="kubernetes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.wqblogs.com:4443/image/default.png"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://wqblogs.com/2019/09/23/kubernetes%E5%AE%89%E8%A3%85dashboard/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查詢的內容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '複製成功',
+    error: '複製錯誤',
+    noSupport: '瀏覽器不支援'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '剛剛',
+    min: '分鐘前',
+    hour: '小時前',
+    day: '天前',
+    month: '個月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'kubernetes安装dashboard',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-24 23:59:29'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="虫子个人博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://www.wqblogs.com:4443/image/default.png')"><nav id="nav"><span id="blog-info"><a href="/" title="虫子个人博客"><span class="site-name">虫子个人博客</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜尋</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/2020/01/04/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">kubernetes安装dashboard</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">發表於</span><time class="post-meta-date-created" datetime="2019-09-23T07:54:22.000Z" title="發表於 2019-09-23 15:54:22">2019-09-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新於</span><time class="post-meta-date-updated" datetime="2023-06-24T15:59:29.000Z" title="更新於 2023-06-24 23:59:29">2023-06-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Kubernetes/">Kubernetes</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="kubernetes安装dashboard"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">閱讀量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="导入镜像"><a href="#导入镜像" class="headerlink" title="导入镜像"></a>导入镜像</h3><p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1FjMf0_GAVX8lyxNuPVNF2A">https://pan.baidu.com/s/1FjMf0_GAVX8lyxNuPVNF2A</a> 提取码：t1ei</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">docker load -i dashboard_1.10.1.atr.gz</span></span><br></pre></td></tr></table></figure>
+
+ <span id="more"></span>
+
+<h3 id="修改配置文件"><a href="#修改配置文件" class="headerlink" title="修改配置文件"></a>修改配置文件</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">wget https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml</span></span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"> vim kubernetes-dashboard.yaml</span></span><br><span class="line">    spec:</span><br><span class="line">      containers:</span><br><span class="line">      - name: kubernetes-dashboard </span><br><span class="line">        image: k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.1</span><br><span class="line">        imagePullPolicy: IfNotPresent      # 当本地有镜像就优先本地，不远程pull</span><br><span class="line">spec:</span><br><span class="line">  type: NodePort   # 配置nodeIP访问</span><br><span class="line">  ports:</span><br><span class="line">    - port: 443</span><br><span class="line">      targetPort: 8443</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="启动dashboard"><a href="#启动dashboard" class="headerlink" title="启动dashboard"></a>启动dashboard</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"> kubectl create -f kubernetes-dashboard.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl get deploy -n kube-system</span></span><br><span class="line">NAME                   READY   UP-TO-DATE   AVAILABLE   AGE</span><br><span class="line">coredns                2/2     2            2           3h9m</span><br><span class="line">kubernetes-dashboard   1/1     1            1           15m</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl get svc -n kube-system</span></span><br><span class="line">NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                  AGE</span><br><span class="line">kube-dns               ClusterIP   10.254.0.10      &lt;none&gt;        53/UDP,53/TCP,9153/TCP   3h10m</span><br><span class="line">kubernetes-dashboard   NodePort    10.254.252.116   &lt;none&gt;        443:30195/TCP            40m</span><br></pre></td></tr></table></figure>
+
+
+<h3 id="访问url"><a href="#访问url" class="headerlink" title="访问url"></a>访问url</h3><p><a target="_blank" rel="noopener" href="https://10.0.0.11:30195/">https://10.0.0.11:30195</a></p>
+<p><img src="/image/1569225047-15692250151.png"></p>
+<h4 id="创建token令牌"><a href="#创建token令牌" class="headerlink" title="创建token令牌"></a>创建token令牌</h4><p>创建serviceaccount</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl create serviceaccount dashboard-admin -n kube-system</span></span><br><span class="line">serviceaccount/dashboard-admin created</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl get sa -n kube-system|grep admin</span></span><br><span class="line">dashboard-admin                      1         78s</span><br></pre></td></tr></table></figure>
+
+
+<p>把serviceaccount绑定在clusteradmin，授权serviceaccount用户具有整个集群的访问管理权限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl create clusterrolebinding dashboard-cluster-admin --clusterrole=cluster-admin --serviceaccount=kube-system:dashboard-admin</span></span><br><span class="line">clusterrolebinding.rbac.authorization.k8s.io/dashboard-cluster-admin created</span><br></pre></td></tr></table></figure>
+
+
+<p>获取token令牌</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl get secret -n kube-system|grep dashboard</span></span><br><span class="line">dashboard-admin-token-vxjsd                      kubernetes.io/service-account-token   3      3m36s</span><br><span class="line">kubernetes-dashboard-certs                       Opaque                                0      69m</span><br><span class="line">kubernetes-dashboard-key-holder                  Opaque                                2      46m</span><br><span class="line">kubernetes-dashboard-token-bjdkr                 kubernetes.io/service-account-token   3      69m</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl describe secret dashboard-admin-token-vxjsd -n kube-system</span></span><br><span class="line">Name:         dashboard-admin-token-vxjsd</span><br><span class="line">Namespace:    kube-system</span><br><span class="line">Labels:       &lt;none&gt;</span><br><span class="line">Annotations:  kubernetes.io/service-account.name: dashboard-admin</span><br><span class="line">              kubernetes.io/service-account.uid: c945044a-b2c2-4adc-95a3-2ce7b127766e</span><br><span class="line">Type:  kubernetes.io/service-account-token  </span><br><span class="line">Data</span><br><span class="line">====</span><br><span class="line">ca.crt:     1025 bytes</span><br><span class="line">namespace:  11 bytes</span><br><span class="line">token:      eyJhbGciOiJSUzI1NiIsImtpZCI6IiJ9.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJkYXNoYm9hcmQtYWRtaW4tdG9rZW4tdnhqc2QiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlcnZpY2UtYWNjb3VudC5uYW1lIjoiZGFzaGJvYXJkLWFkbWluIiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiYzk0NTA0NGEtYjJjMi00YWRjLTk1YTMtMmNlN2IxMjc3NjZlIiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50Omt1YmUtc3lzdGVtOmRhc2hib2FyZC1hZG1pbiJ9.Kg8LiUjCznuL8MxEJV2urJ-Z5iiFaxVeuMLAhQguxV8j7wMpKtEmVzQRytjCaODOL60jqN9N3SXmZNSViwJfX2OcPBnWOHiGtUNxqfymSMJ7jyUVV3NceEGu3iaBsukHQZDl5N4bECUmaXAzktX-79QUXfkRT8ZB2h46t5asLd4Os7ixBwUuReXeyGdqTO2fCcvFn88AgekxBbueDmU55hKw2ELV0-AyB40N-7LqjfPcAx2X_TjL0FjdbjQKJ9w_nrm7dK-3NOA9yrJkkuY856WJjz8n-eJVuG1J2B2qaVJqbW_d8kGzlIDOl_QFlHd0sO1sFWc016ivWL92yaseHQ</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="修改token过期时间"><a href="#修改token过期时间" class="headerlink" title="修改token过期时间"></a>修改token过期时间</h4><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"> vim kubernetes-dashboard.yaml</span></span><br><span class="line">        ports:</span><br><span class="line">        - containerPort: 8443</span><br><span class="line">          protocol: TCP</span><br><span class="line">        args:</span><br><span class="line">          - --auto-generate-certificates</span><br><span class="line">          - --token-ttl=43200    # 修改token过期时间</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f kubernetes-dashboard.yaml</span></span><br><span class="line">secret/kubernetes-dashboard-certs unchanged</span><br><span class="line">serviceaccount/kubernetes-dashboard unchanged</span><br><span class="line">role.rbac.authorization.k8s.io/kubernetes-dashboard-minimal unchanged</span><br><span class="line">rolebinding.rbac.authorization.k8s.io/kubernetes-dashboard-minimal unchanged</span><br><span class="line">deployment.apps/kubernetes-dashboard configured</span><br><span class="line">service/kubernetes-dashboard unchanged</span><br></pre></td></tr></table></figure>
+
+
+<h4 id="token登录"><a href="#token登录" class="headerlink" title="token登录"></a>token登录</h4><p><img src="/image/1569225187-15692251811.png"></p>
+<p><img src="/image/1569225216-15692252071.png"></p>
+<h3 id="部署监控"><a href="#部署监控" class="headerlink" title="部署监控"></a>部署监控</h3><p><strong>Heapster+InfluxDB+Grafana</strong></p>
+<p>访问 <a target="_blank" rel="noopener" href="https://github.com/kubernetes-retired/heapster">https://github.com/kubernetes-retired/heapster</a></p>
+<p>heapster&#x2F;deploy&#x2F;kube-config&#x2F;influxdb</p>
+<p>获取 grfana.yaml heapster.yaml influxdb.yaml</p>
+<p>heapster&#x2F;deploy&#x2F;kube-config&#x2F;rbac</p>
+<p>获取 heapster-rbac.yml</p>
+<p>yml与镜像包</p>
+<p>链接：<a target="_blank" rel="noopener" href="https://pan.baidu.com/s/1gDlbS6-OC11YFQKuxkS7Ig">https://pan.baidu.com/s/1gDlbS6-OC11YFQKuxkS7Ig</a> 提取码：j881</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">#</span><span class="language-bash"> kubectl create -f .</span></span><br></pre></td></tr></table></figure>
+
+
+<h4 id="heapster报错："><a href="#heapster报错：" class="headerlink" title="heapster报错："></a>heapster报错：</h4><h5 id="x509-certificate-signed-by-unknown-authority"><a href="#x509-certificate-signed-by-unknown-authority" class="headerlink" title="x509: certificate signed by unknown authority"></a>x509: certificate signed by unknown authority</h5><p><img src="/image/1569472718-Image.png"></p>
+<p>把原来的参数更改成下面的参数,heapster 即可正常启动</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">--source=kubernetes:https://kubernetes.default?inClusterConfig=false&amp;useServiceAccount=true&amp;auth=&amp;kubeletPort=10250&amp;kubeletHttps=true&amp;insecure=true</span><br></pre></td></tr></table></figure>
+
+<h5 id="403-Forbidden"><a href="#403-Forbidden" class="headerlink" title="403 Forbidden"></a>403 Forbidden</h5><p><img src="/image/1569472734-Image.png"></p>
+<p>修改ClusterRole: system:heapster的权限，添加Resource: nodes&#x2F;stats的create权限</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl describe clusterrole system:heapster</span></span><br><span class="line">Name:         system:heapster</span><br><span class="line">Labels:       kubernetes.io/bootstrapping=rbac-defaults</span><br><span class="line">Annotations:  rbac.authorization.kubernetes.io/autoupdate: true</span><br><span class="line">PolicyRule:</span><br><span class="line">  Resources               Non-Resource URLs  Resource Names  Verbs</span><br><span class="line">  ---------               -----------------  --------------  -----</span><br><span class="line">  events                  []                 []              [get list watch]</span><br><span class="line">  namespaces              []                 []              [get list watch]</span><br><span class="line">  nodes                   []                 []              [get list watch]</span><br><span class="line">  pods                    []                 []              [get list watch]</span><br><span class="line">  deployments.extensions  []                 []              [get list watch]</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl get clusterrole system:heapster -o yaml &gt; heapster-clusterrole.yaml</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">vim heapster-clusterrole.yaml</span></span><br><span class="line">16   resources:</span><br><span class="line">17   - events</span><br><span class="line">18   - namespaces</span><br><span class="line">19   - nodes</span><br><span class="line">20   - pods</span><br><span class="line">21   - nodes/stats</span><br><span class="line">22   verbs:</span><br><span class="line">23   - create</span><br><span class="line">24   - get</span><br><span class="line">25   - list</span><br><span class="line">26   - watch</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f heapster-clusterrole.yaml</span></span><br><span class="line">Warning: kubectl apply should be used on resource created by either kubectl create --save-config or kubectl apply</span><br><span class="line">clusterrole.rbac.authorization.k8s.io/system:heapster configured</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl delete -f heapster.yml</span></span><br><span class="line">serviceaccount &quot;heapster&quot; deleted</span><br><span class="line">deployment.extensions &quot;heapster&quot; deleted</span><br><span class="line">service &quot;heapster&quot; deleted</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">kubectl apply -f heapster.yml</span></span><br><span class="line">serviceaccount/heapster created</span><br><span class="line">deployment.extensions/heapster created</span><br><span class="line">service/heapster created</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="/image/1569472776-Image.png"> </p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="https://wqblogs.com">chongzi</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章連結: </span><span class="post-copyright-info"><a href="https://wqblogs.com/2019/09/23/kubernetes%E5%AE%89%E8%A3%85dashboard/">https://wqblogs.com/2019/09/23/kubernetes%E5%AE%89%E8%A3%85dashboard/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版權聲明: </span><span class="post-copyright-info">本部落格所有文章除特別聲明外，均採用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 許可協議。轉載請註明來自 <a href="https://wqblogs.com" target="_blank">虫子个人博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/kubernetes/">kubernetes</a></div><div class="post_share"><div class="social-share" data-image="https://www.wqblogs.com:4443/image/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i> 打賞</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="/img/wechat.jpg" target="_blank"><img class="post-qr-code-img" src="/img/wechat.jpg" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="/img/alipay.jpg" target="_blank"><img class="post-qr-code-img" src="/img/alipay.jpg" alt="alipay"/></a><div class="post-qr-code-desc">alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/09/23/nginx%E5%9F%BA%E7%A1%80%E4%BC%98%E5%8C%96/" title="nginx基础优化"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">nginx基础优化</div></div></a></div><div class="next-post pull-right"><a href="/2019/09/22/nginx%E7%9A%84%E5%87%A0%E7%A7%8D%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95/" title="nginx的几种调度算法"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">nginx的几种调度算法</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相關推薦</span></div><div class="relatedPosts-list"><div><a href="/2019/09/28/K8s%E9%83%A8%E7%BD%B2Ingress%20Traefik/" title="K8s部署Ingress Traefik"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-28</div><div class="title">K8s部署Ingress Traefik</div></div></a></div><div><a href="/2021/04/23/Kubernetes%E6%90%AD%E5%BB%BAjenkins%E9%9B%86%E7%BE%A4/" title="kubernetes实现jenkins slave动态伸缩"><img class="cover" src="https://www.wqblogs.com:4443/image/jenkins.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2021-04-23</div><div class="title">kubernetes实现jenkins slave动态伸缩</div></div></a></div><div><a href="/2019/10/31/Kubernetes%E7%9A%84Volume%E4%BD%BF%E7%94%A8/" title="Kubernetes的Volume使用"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-10-31</div><div class="title">Kubernetes的Volume使用</div></div></a></div><div><a href="/2019/09/21/RS%E4%B8%8EDeployment/" title="RS与Deployment"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-22</div><div class="title">RS与Deployment</div></div></a></div><div><a href="/2020/03/23/Spinnaker%E7%9A%84Armory%E5%8F%91%E8%A1%8C%E7%89%88%E9%83%A8%E7%BD%B2/" title="spinnaker的Armory发行版部署"><img class="cover" src="https://www.wqblogs.com:4443/image/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-23</div><div class="title">spinnaker的Armory发行版部署</div></div></a></div><div><a href="/2020/12/14/calico%E9%83%A8%E7%BD%B2/" title="calico网络"><img class="cover" src="https://www.wqblogs.com:4443/image/calico.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-14</div><div class="title">calico网络</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">chongzi</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">190</div></a><a href="/tags/"><div class="headline">標籤</div><div class="length-num">41</div></a><a href="/categories/"><div class="headline">分類</div><div class="length-num">40</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/wq-h"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">有问题请邮件或者QQ联系</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目錄</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%BC%E5%85%A5%E9%95%9C%E5%83%8F"><span class="toc-number">1.</span> <span class="toc-text">导入镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">修改配置文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8dashboard"><span class="toc-number">3.</span> <span class="toc-text">启动dashboard</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AEurl"><span class="toc-number">4.</span> <span class="toc-text">访问url</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAtoken%E4%BB%A4%E7%89%8C"><span class="toc-number">4.1.</span> <span class="toc-text">创建token令牌</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9token%E8%BF%87%E6%9C%9F%E6%97%B6%E9%97%B4"><span class="toc-number">4.2.</span> <span class="toc-text">修改token过期时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#token%E7%99%BB%E5%BD%95"><span class="toc-number">4.3.</span> <span class="toc-text">token登录</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%83%A8%E7%BD%B2%E7%9B%91%E6%8E%A7"><span class="toc-number">5.</span> <span class="toc-text">部署监控</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#heapster%E6%8A%A5%E9%94%99%EF%BC%9A"><span class="toc-number">5.1.</span> <span class="toc-text">heapster报错：</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#x509-certificate-signed-by-unknown-authority"><span class="toc-number">5.1.1.</span> <span class="toc-text">x509: certificate signed by unknown authority</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#403-Forbidden"><span class="toc-number">5.1.2.</span> <span class="toc-text">403 Forbidden</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群"><img src="https://www.wqblogs.com:4443/image/Kubernetes.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ubuntu20.04 lts 部署k8s集群"/></a><div class="content"><a class="title" href="/2022/12/30/ubuntu20.04-lts%E9%83%A8%E7%BD%B2k8s%E9%9B%86%E7%BE%A4/" title="ubuntu20.04 lts 部署k8s集群">ubuntu20.04 lts 部署k8s集群</a><time datetime="2022-12-30T13:11:59.000Z" title="發表於 2022-12-30 21:11:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜"><img src="https://www.wqblogs.com:4443/image/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="multipss尝鲜"/></a><div class="content"><a class="title" href="/2022/12/30/multipass%E9%85%8D%E7%BD%AE%E8%99%9A%E6%9C%BA/" title="multipss尝鲜">multipss尝鲜</a><time datetime="2022-12-30T08:00:59.000Z" title="發表於 2022-12-30 16:00:59">2022-12-30</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故"><img src="https://www.wqblogs.com:4443/image/postgresql.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="postgresql生产事故"/></a><div class="content"><a class="title" href="/2022/11/27/postgresql%E7%94%9F%E4%BA%A7%E4%BA%8B%E6%95%85/" title="postgresql生产事故">postgresql生产事故</a><time datetime="2022-11-27T13:16:49.000Z" title="發表於 2022-11-27 21:16:49">2022-11-27</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="GO语言变量及常量"/></a><div class="content"><a class="title" href="/2022/11/24/go%E8%AF%AD%E8%A8%80%E5%8F%98%E9%87%8F%E5%8F%8A%E5%B8%B8%E9%87%8F/" title="GO语言变量及常量">GO语言变量及常量</a><time datetime="2022-11-24T11:45:00.000Z" title="發表於 2022-11-24 19:45:00">2022-11-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码"><img src="https://www.wqblogs.com:4443/image/go/golang.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何编写golang代码"/></a><div class="content"><a class="title" href="/2022/11/23/%E5%A6%82%E4%BD%95%E7%BC%96%E5%86%99golang%E4%BB%A3%E7%A0%81/" title="如何编写golang代码">如何编写golang代码</a><time datetime="2022-11-23T15:19:00.000Z" title="發表於 2022-11-23 23:19:00">2022-11-23</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2018 - 2023 By chongzi</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主題 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text"><a target="_blank" rel="noopener" href="https://beian.miit.gov.cn/#/Integrated/recordQuery"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/icp.png"><span>備案號:京ICP备18009919号-1</span></a> <a target="_blank" rel="noopener" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11011502004880"><img class="icp-icon" src="https://www.wqblogs.com:4443/image/备案.png"><span>京公网安备 11011502004880号</span></a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="閱讀模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="淺色和深色模式轉換"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="單欄和雙欄切換"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="設定"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目錄"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到頂部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜尋</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  資料庫載入中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜尋文章" type="text"/></div></div><hr/><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
